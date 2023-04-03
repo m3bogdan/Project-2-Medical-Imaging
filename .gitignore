@@ -1,5 +1,4 @@
 #ignoring the data set
 *.zip
-*.csv
 *.png
 .DS_Store
