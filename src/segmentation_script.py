@@ -5,24 +5,22 @@ import os
 from skimage.color import rgb2gray
 from skimage import util
 
-
+# Input the folder with the images and the name of the image
+# this will be automated later on
 folder_path = "C:/Users/annam/Desktop/Globules/Resized"
-image_path = "C:/Users/annam/Desktop/Globules/Resized/images.jpg"
 filename = "images.jpg"
 
+# reads the image and converts it to grayscale 
 image = io.imread(os.path.join(folder_path, filename))
 grayscale = rgb2gray(image)
 
+# Create a binary mask
 thresh = threshold_otsu(grayscale)
 binary = grayscale > thresh
-
-### DO NOT USE MATPLOTLIB FOR PLOTTING ###
-# io.imshow(binary)
-# io.show()
-
-
-
 inverted_img = util.invert(binary)
 
+### DO NOT USE MATPLOTLIB FOR PLOTTING ###
+# Show the image (will not be a part of the final code)
 io.imshow(inverted_img)
 io.show()
+
