@@ -5,22 +5,24 @@ import os
 from skimage.color import rgb2gray
 from skimage import util
 
-# Input the folder with the images and the name of the image
-# this will be automated later on
-folder_path = "C:/Users/annam/Desktop/Globules/Resized"
-filename = "images.jpg"
+# Set the path to the folder containing the images
+folder_path = 'data/images/test_foto_res'
+folder_path_out = 'data/images/test_foto_res'
 
-# reads the image and converts it to grayscale 
-image = io.imread(os.path.join(folder_path, filename))
-grayscale = rgb2gray(image)
+# List all image files in the folder
+image_files = [f for f in os.listdir(folder_path) if f.endswith('.png') or f.endswith('.jpg')]
 
-# Create a binary mask
-thresh = threshold_otsu(grayscale)
-binary = grayscale > thresh
-inverted_img = util.invert(binary)
+for filename in image_files:
+    # Reads the image and removes the alpha channel if it exists
+    image = io.imread(os.path.join(folder_path, filename))
+    if image.shape[-1] == 4:
+        image = image[..., :3]
 
-### DO NOT USE MATPLOTLIB FOR PLOTTING ###
-# Show the image (will not be a part of the final code)
-io.imshow(inverted_img)
-io.show()
-
+    # Create a binary mask
+    grayscale = rgb2gray(image)
+    thresh = threshold_otsu(grayscale)
+    binary = grayscale > thresh
+    inverted_img = util.invert(binary)
+    
+    # Save the images
+    io.imsave(os.path.join(folder_path_out, 'mask_' + filename), inverted_img)
