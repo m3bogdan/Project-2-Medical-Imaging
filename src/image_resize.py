@@ -17,7 +17,7 @@ def image_resize(folder_path, resized_folder_path):
     target_size = (256, 256)
 
     # Loop over the image file names and resize each image
-    for filename in os.listdir(folder_path):
+    for filename in [f for f in os.listdir(folder_path) if f.endswith('.jpg') or f.endswith('.png')]:
         # Load the image from file
         image = io.imread(os.path.join(folder_path, filename))
         # Resize the image to the target size
