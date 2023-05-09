@@ -6,8 +6,8 @@ from skimage.color import rgb2gray
 from skimage import util
 
 # Set the path to the folder containing the images
-folder_path = 'data/images/test_foto_res'
-folder_path_out = 'data/images/test_foto_res'
+folder_path = "C:/Users/annam/Desktop/Globules/Resized"
+folder_path_out = "C:/Users/annam/Desktop/Globules/Segmentation"
 
 # List all image files in the folder
 image_files = [f for f in os.listdir(folder_path) if f.endswith('.png') or f.endswith('.jpg')]
