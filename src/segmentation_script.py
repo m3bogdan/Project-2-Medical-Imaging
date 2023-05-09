@@ -15,6 +15,7 @@ image_files = [f for f in os.listdir(folder_path) if f.endswith('.png') or f.end
 for filename in image_files:
     # Reads the image and removes the alpha channel if it exists
     image = io.imread(os.path.join(folder_path, filename))
+    # Ignore the alpha channel (e.g. transparency )
     if image.shape[-1] == 4:
         image = image[..., :3]
 
