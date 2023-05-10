@@ -15,5 +15,6 @@ mask = io.imread(mask_path)
 expanded_mask = mask[:, :, np.newaxis] #makes the mask 3D
 masked_image = cv2.bitwise_and(image, image, mask=expanded_mask)
 
-io.imshow(masked_image)
-io.show()
+
+folder_path_out = "C:/Users/annam/Desktop/Globules/Masked"
+io.imsave(folder_path_out, masked_image)
