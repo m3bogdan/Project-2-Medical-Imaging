@@ -4,14 +4,6 @@ from skimage.filters import threshold_otsu
 import os
 from skimage.color import rgb2gray
 
-
-
-# Set the path to the folder containing the images
-folder_path = "C:/Users/annam/Desktop/Globules/Resized"
-folder_path_out = "C:/Users/annam/Desktop/Globules/Segmentation"
-
-
-
 def image_segment(folder_path_in, folder_path_out):
 
     #Iterate through all the jpg and png files in the selected folder
@@ -37,7 +29,7 @@ def image_segment(folder_path_in, folder_path_out):
 
 
 #Specify where to pull images from and where to save them
-folder_path_in = "C:/Users/annam/Desktop/Globules/Resized"
-folder_path_out = "C:/Users/annam/Desktop/Globules/Segmentation"
+folder_path_in = "C:/Users/annam/Desktop/Test/Resized"
+folder_path_out = "C:/Users/annam/Desktop/Test/Segmentation"
 
 image_segment(folder_path_in, folder_path_out)
