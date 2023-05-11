@@ -3,6 +3,7 @@ from skimage import io, util, img_as_ubyte
 from skimage.filters import threshold_otsu
 import os
 from skimage.color import rgb2gray
+import skimage.filters as filters
 
 def image_segment(folder_path_in, folder_path_out):
 
@@ -19,9 +20,11 @@ def image_segment(folder_path_in, folder_path_out):
 
         # Create a binary mask
         grayscale = rgb2gray(original)
+        grayscale = filters.gaussian(grayscale, sigma=1)
         thresh = threshold_otsu(grayscale)
         binary = grayscale > thresh
         inverted_img = util.invert(binary)
+
         
         #Save the image in the new folder
         new_path = folder_path_out + "/" + filename
@@ -29,7 +32,7 @@ def image_segment(folder_path_in, folder_path_out):
 
 
 #Specify where to pull images from and where to save them
-folder_path_in = "C:/Users/annam/Desktop/Test/Resized"
-folder_path_out = "C:/Users/annam/Desktop/Test/Segmentation"
+folder_path_in = "C:/Users/annam/Desktop/Globules/Resized"
+folder_path_out = "C:/Users/annam/Desktop/Globules/Segmentation"
 
 image_segment(folder_path_in, folder_path_out)
