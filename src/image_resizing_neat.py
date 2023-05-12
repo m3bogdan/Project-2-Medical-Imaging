@@ -13,6 +13,10 @@ def image_resize(folder_path_in, folder_path_out):
         image_path = folder_path_in + "/" + filename
         original = io.imread(image_path)
 
+        # Ignore the alpha channel (e.g. transparency )
+        if original.shape[-1] == 4:
+            original = original[..., :3]
+
         #Resize the image (preserving the proportions)
         new_height = int(256)
         new_width = int(new_height / original.shape[0] * original.shape[1])
@@ -25,8 +29,8 @@ def image_resize(folder_path_in, folder_path_out):
 
 
 #Specify where to pull images from and where to save them
-folder_path_in = "C:/Users/annam/Desktop/Globules/Original"
-folder_path_out = "C:/Users/annam/Desktop/Globules/Resized"
+folder_path_in = "C:/Users/annam/Desktop/Vascular/Original"
+folder_path_out = "C:/Users/annam/Desktop/Vascular/Resized"
 image_resize(folder_path_in, folder_path_out)
 
 
