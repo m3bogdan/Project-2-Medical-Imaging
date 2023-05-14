@@ -5,7 +5,7 @@ import numpy as np
 
 
 
-def new3(picture):
+def blue_veil_detect(picture):
     height_picture, width_picture, _ = picture.shape
     total_pixels = height_picture * width_picture
     count = 0
@@ -27,4 +27,4 @@ def new3(picture):
     else:
         return 0
 
-#print(new3(masked_image))
+#print(blue_veil_detect(masked_image))
