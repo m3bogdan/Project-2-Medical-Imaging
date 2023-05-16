@@ -26,5 +26,5 @@ def blue_veil_detect(picture):
         #return count
     else:
         return 0
-#ab
+#a
 #print(blue_veil_detect(masked_image))
