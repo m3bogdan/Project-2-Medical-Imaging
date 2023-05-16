@@ -22,8 +22,9 @@ def blue_veil_detect(picture):
                 count += 1
 
     if count > 0:
-        return round(count/total_pixels * 100,2)
+        #return round(count/total_pixels * 100,2)
         #return count
+        return 1
     else:
         return 0
 #a
