@@ -1,14 +1,66 @@
-from skimage import io, color
-import numpy as np
 import os
-from skimage import exposure
-from skimage.color import rgb2gray
-from math import sqrt
-from skimage.feature import blob_log
-from skimage.color import rgb2gray
-from skimage import util
 import cv2
+import numpy as np
+from math import sqrt
+from skimage import io, color, exposure, util
+from skimage.color import rgb2gray
+from skimage.feature import blob_log
+from skimage.filters import threshold_otsu
+from skimage.measure import label, regionprops
 
+
+def measure_pigment_network(image): #feature 1
+    
+    # Convert the image to the LAB color space
+    lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+
+    # Extract the L, A, and B channels from the LAB image
+    l_channel, a_channel, b_channel = cv2.split(lab_image)
+
+    # Apply contrast stretching to enhance the L channel
+    enhanced_l_channel = cv2.equalizeHist(l_channel)
+
+    # Perform thresholding on the enhanced L channel to obtain a binary mask
+    _, binary_mask = cv2.threshold(enhanced_l_channel, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Apply morphological operations to remove noise and refine the binary mask
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    morphological_mask = cv2.morphologyEx(binary_mask, cv2.MORPH_OPEN, kernel)
+
+    # Convert the morphological mask to a color image
+    color_mask = cv2.cvtColor(morphological_mask, cv2.COLOR_GRAY2BGR)
+
+    # Combine the color mask with the original image to highlight the regions of interest
+    result = cv2.bitwise_and(image, color_mask)
+
+    # Calculate the percentage of pigment network coverage
+    total_pixels = np.prod(binary_mask.shape[:2])
+    pigment_pixels = np.count_nonzero(binary_mask)
+    coverage_percentage = (pigment_pixels / total_pixels) * 100
+
+    print("Pigment Network Coverage: {:.2f}%".format(coverage_percentage))
+
+def measure_blue_veil(image): #feature 2
+    height_picture, width_picture, _ = image.shape
+    total_pixels = height_picture * width_picture
+    count = 0
+
+    for y in range(height_picture):
+        for x in range(width_picture):
+            b_picture = float(image[y, x][0])  # Blue channel value
+            g_picture = float(image[y, x][1])  # Green channel value
+            r_picture = float(image[y, x][2])  # Red channel value
+
+            total = r_picture + g_picture + b_picture
+
+            if b_picture > 60 and (r_picture - 46 < g_picture) and (g_picture < r_picture + 15):
+                count += 1
+
+    if count > 0:
+        #return round(count/total_pixels * 100,2)
+        return 1
+    else:
+        return 0
 
 def measure_vascular(image): #feature 3
 
@@ -34,9 +86,9 @@ def measure_vascular(image): #feature 3
     result[~mask] = 0
     
     if result.max() > 0:
-        print("Diagnosis: cancer, vascular pattern found")
+        return 1
     else:
-        print("Diagnosis: not a cancer")
+        return 0
         
 def measure_globules(image): #feature 4
     # Preprocess the image
@@ -48,9 +100,9 @@ def measure_globules(image): #feature 4
     blobs_doh[:, 2] = blobs_doh[:, 2] * sqrt(2)
     blob_amount = len(blobs_doh)
     if blob_amount > 600:
-        print("Diagnosis: cancer, blobs found: ", blob_amount)
+        return 1
     else:
-        print("Diagnosis: not a cancer, blobs found: ", blob_amount)
+        return 0
         
 def measure_streaks(image): #feature 5
     # Convert to grayscale and apply threshold
@@ -68,18 +120,68 @@ def measure_streaks(image): #feature 5
     # Compute perimeter of the border
     border_perimeter = cv2.arcLength(contours[0], True)
 
-    print('Lesion area:', lesion_area)
-    print('Border perimeter:', border_perimeter)
+    #print('Lesion area:', lesion_area)
+    #print('Border perimeter:', border_perimeter)
 
     irregularity = (border_perimeter ** 2) / 4 * np.pi * lesion_area
-    print('Irregularity:', irregularity)
+    #print('Irregularity:', irregularity)
     
     threshold = 1.8
     if irregularity > threshold:
-        print('Irregular streaks detected!')
+        return 1
     else:
-        print('No irregular streaks detected.')
+        return 0
+
+def measure_irregular_pigmentation(image): #feature 6
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Apply adaptive thresholding to create a binary image
+    threshold = threshold_otsu(gray)
+    binary = gray > threshold
+    
+    # Label connected components in the binary image
+    labeled_image = label(binary)
+    
+    # Initialize lists to store irregular pigmentation regions' coordinates
+    min_rows, min_cols, max_rows, max_cols = [], [], [], []
+    
+    # Iterate through each labeled region
+    for region in regionprops(labeled_image):
+        # Calculate the area and perimeter of the region
+        area = region.area
+        perimeter = region.perimeter
         
+        # Calculate the circularity of the region
+        circularity = 4 * 3.1415 * (area / (perimeter ** 2))
+        
+        # Check if the region is irregular based on circularity threshold
+        if circularity < 0.6:
+            # Get the bounding box coordinates of the region
+            min_row, min_col, max_row, max_col = region.bbox
+            
+            # Store the coordinates of the irregular pigmentation region
+            min_rows.append(min_row)
+            min_cols.append(min_col)
+            max_rows.append(max_row)
+            max_cols.append(max_col)
+    
+    # Convert the image to the LAB color space
+    lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+
+    # Extract the L channel from the LAB image
+    l_channel = lab_image[:, :, 0]
+
+    # Apply adaptive thresholding to create a binary mask
+    _, binary_mask = cv2.threshold(l_channel, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Calculate the percentage of irregular pigmentation coverage
+    total_pixels = np.prod(binary_mask.shape[:2])
+    irregular_pixels = np.count_nonzero(binary_mask)
+    coverage_percentage = (irregular_pixels / total_pixels) * 100
+
+    print("Irregular Pigmentation Coverage: {:.2f}%".format(coverage_percentage))
+
 def measure_regression(image): #feature 7
     hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
@@ -100,6 +202,7 @@ def measure_regression(image): #feature 7
     # Check if the number of non-zero pixels is above a threshold
     threshold = 2500 # more fine tunning needed(aka more images to test on)
     if num_pixels > threshold:
-        print('1')
+        return 1
     else:
-        print('0')
+        return 0
+        
