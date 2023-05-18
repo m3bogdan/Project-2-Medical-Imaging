@@ -38,7 +38,8 @@ def measure_pigment_network(image): #feature 1
     pigment_pixels = np.count_nonzero(binary_mask)
     coverage_percentage = (pigment_pixels / total_pixels) * 100
 
-    print("Pigment Network Coverage: {:.2f}%".format(coverage_percentage))
+    #print("Pigment Network Coverage: {:.2f}%".format(coverage_percentage))
+    return coverage_percentage
 
 def measure_blue_veil(image): #feature 2
     height_picture, width_picture, _ = image.shape
@@ -180,8 +181,9 @@ def measure_irregular_pigmentation(image): #feature 6
     irregular_pixels = np.count_nonzero(binary_mask)
     coverage_percentage = (irregular_pixels / total_pixels) * 100
 
-    print("Irregular Pigmentation Coverage: {:.2f}%".format(coverage_percentage))
-
+    #print("Irregular Pigmentation Coverage: {:.2f}%".format(coverage_percentage))
+    return coverage_percentage
+    
 def measure_regression(image): #feature 7
     hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
