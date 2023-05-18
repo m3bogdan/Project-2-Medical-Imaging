@@ -14,13 +14,15 @@ for filename in [f for f in os.listdir(folder_path_in) if f.endswith('.jpg') or 
     filenames.append(filename)
 
 # Iterate over images
-for i, filename in enumerate(filenames):
+for filename in enumerate(filenames):
     # Read the image
     image_path = folder_path_in + "/" + filename
     original = io.imread(image_path)
     # Ignore the alpha channel (e.g. transparency )
     if original.shape[-1] == 4:
         original = original[..., :3]
+
+
 
     # Preprocess the image
     image_gray = rgb2gray(original)
