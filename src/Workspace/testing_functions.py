@@ -224,6 +224,9 @@ def measure_regression(image): #feature 7, returns nb of pixels
     # else:
     #     return 0
         
+def all_in_one(image):
+    return measure_pigment_network(image), measure_blue_veil(image), measure_vascular(image), measure_globules(image), measure_streaks(image), measure_irregular_pigmentation(image), measure_regression(image)
+
 def load_images_from_folder(folder):
     images = []
     for filename in os.listdir(folder):
@@ -232,3 +235,5 @@ def load_images_from_folder(folder):
             images.append(img)
     return images
 
+image = load_images_from_folder("data/images/Masks/Color_mask/Test")
+print(all_in_one(image[2]))
