@@ -236,4 +236,24 @@ def load_images_from_folder(folder):
     return images
 
 image = load_images_from_folder("data/images/Masks/Color_mask/Test")
-print(all_in_one(image[2]))
+tuple_feature = all_in_one(image[7])
+
+list1 = []
+list2 = []
+list3 = []
+list4 = []
+list5 = []
+list6 = []
+list7 = []
+
+for tup in tuple_feature:
+    list1.append(tup[0])
+    list2.append(tup[1])
+    list3.append(tup[2])
+    list4.append(tup[3])
+    list5.append(tup[4])
+    list6.append(tup[5])
+    list7.append(tup[6])
+
+print(list1)
+
