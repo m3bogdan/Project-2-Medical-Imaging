@@ -48,7 +48,7 @@ def extract_features(folder_path):
     return feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7
 
 # Define the folder path for image processing
-folder_path_in = "C:/Users/annam/Desktop/Color_mask/Color_mask/Training"
+folder_path_in = "data\ColorMask\Training"
 
 # Extract features from the images
 feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7 = extract_features(folder_path_in)
@@ -98,10 +98,10 @@ print("Classification Report:")
 print(classification_rep)
 
 # Save the trained classifier
-pickle.dump(classifier, open("C:/Users/annam/Desktop/Trained_classifiers/DecisionTree.pkl", "wb"))
+pickle.dump(classifier, open("Pickle/DecisionTree.pkl", "wb"))
 
 # Load the trained model
-loaded_model = pickle.load(open("C:/Users/annam/Desktop/Trained_classifiers/DecisionTree.pkl", "rb"))
+loaded_model = pickle.load(open("CPickle/DecisionTree.pkl", "rb"))
 
 # Assuming you have a new image to predict
 image_path = "C:/Users/annam/Desktop/Vascular/Masked/image5.png"
