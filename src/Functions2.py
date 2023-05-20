@@ -19,7 +19,7 @@ def measure_pigment_network(image):
     pigment_pixels = np.count_nonzero(binary_mask)
     coverage_percentage = (pigment_pixels / total_pixels) * 100
 
-    return 1 if coverage_percentage > 50 else 0
+    return coverage_percentage
 
 
 def measure_blue_veil(image):
@@ -33,7 +33,7 @@ def measure_blue_veil(image):
             if b > 60 and (r - 46 < g) and (g < r + 15):
                 count += 1
 
-    return 1 if count > 0 else 0
+    return count
 
 
 def measure_vascular(image):
@@ -47,7 +47,7 @@ def measure_vascular(image):
     upper_red = np.array([25/360, 1, 1])
     mask = np.logical_and(np.all(hsv_img >= lower_red, axis=-1), np.all(hsv_img <= upper_red, axis=-1))
 
-    return 1 if mask.any() else 0
+    return np.sum(mask)
 
 
 def measure_globules(image):
@@ -58,7 +58,7 @@ def measure_globules(image):
     blobs_doh[:, 2] = blobs_doh[:, 2] * sqrt(2)
     blob_amount = len(blobs_doh)
 
-    return 1 if blob_amount > 600 else 0
+    return blob_amount
 
 
 def measure_streaks(image):
@@ -70,7 +70,7 @@ def measure_streaks(image):
     border_perimeter = cv2.arcLength(contours[0], True)
     irregularity = (border_perimeter ** 2) / (4 * np.pi * lesion_area)
 
-    return 1 if irregularity > 1.8 else 0
+    return irregularity
 
 
 def measure_irregular_pigmentation(image):
@@ -98,7 +98,7 @@ def measure_irregular_pigmentation(image):
     irregular_pixels = np.count_nonzero(binary_mask)
     coverage_percentage = (irregular_pixels / total_pixels) * 100
 
-    return 1 if coverage_percentage > 50 else 0
+    return coverage_percentage
 
 
 def measure_regression(image):
@@ -108,4 +108,4 @@ def measure_regression(image):
     mask = cv2.inRange(hsv_img, lower_color, upper_color)
     num_pixels = cv2.countNonZero(mask)
 
-    return 1 if num_pixels > 2500 else 0
+    return num_pixels
