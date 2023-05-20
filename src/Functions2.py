@@ -70,6 +70,11 @@ def measure_streaks(image):
     border_perimeter = cv2.arcLength(contours[0], True)
     irregularity = (border_perimeter ** 2) / (4 * np.pi * lesion_area)
 
+    if lesion_area == 0:
+        irregularity = 0 
+    else:
+        irregularity = (border_perimeter ** 2) / (4 * np.pi * lesion_area)
+
     return irregularity
 
 
