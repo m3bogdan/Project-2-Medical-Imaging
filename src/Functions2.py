@@ -109,24 +109,3 @@ def measure_regression(image):
     num_pixels = cv2.countNonZero(mask)
 
     return 1 if num_pixels > 2500 else 0
-
-
-# Test the functions with example images
-image_path = 'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\data\ColorMask\Test\PAT_38_54_234.png'
-image = cv2.imread(image_path)
-
-pigment_network = measure_pigment_network(image)
-blue_veil = measure_blue_veil(image)
-vascular_structures = measure_vascular(image)
-globules = measure_globules(image)
-streaks = measure_streaks(image)
-irregular_pigmentation = measure_irregular_pigmentation(image)
-regression_structures = measure_regression(image)
-
-print("Pigment Network:", pigment_network)
-print("Blue Veil:", blue_veil)
-print("Vascular Structures:", vascular_structures)
-print("Globules:", globules)
-print("Streaks:", streaks)
-print("Irregular Pigmentation:", irregular_pigmentation)
-print("Regression Structures:", regression_structures)
