@@ -73,6 +73,7 @@ def measure_streaks(image):
     return irregularity
 
 
+
 def measure_irregular_pigmentation(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     threshold = threshold_otsu(gray)
@@ -84,6 +85,10 @@ def measure_irregular_pigmentation(image):
     for region in regionprops(labeled_image):
         area = region.area
         perimeter = region.perimeter
+
+        if perimeter == 0:
+            continue
+
         circularity = 4 * np.pi * (area / (perimeter ** 2))
 
         if circularity < 0.6:
@@ -99,7 +104,6 @@ def measure_irregular_pigmentation(image):
     coverage_percentage = (irregular_pixels / total_pixels) * 100
 
     return coverage_percentage
-
 
 def measure_regression(image):
     hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
