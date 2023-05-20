@@ -41,11 +41,17 @@ def measure_vascular(image):
     enhanced_red_channel = exposure.adjust_gamma(red_channel, gamma=1)
     enhanced_image = image.copy()
     enhanced_image[:, :, 0] = enhanced_red_channel
-
     hsv_img = color.rgb2hsv(enhanced_image)
-    lower_red = np.array([0, 40/100, 00/100])
-    upper_red = np.array([25/360, 1, 1])
-    mask = np.logical_and(np.all(hsv_img >= lower_red, axis=-1), np.all(hsv_img <= upper_red, axis=-1))
+
+    lower_red1 = np.array([0, 40/100, 00/100])
+    upper_red1 = np.array([25/360, 1, 1])
+    mask1 = np.logical_and(np.all(hsv_img >= lower_red1, axis=-1), np.all(hsv_img <= upper_red1, axis=-1))
+
+    lower_red2 = np.array([330/360, 40/100, 00/100])  # Lower limit for red hue, saturation, and value
+    upper_red2 = np.array([1, 1, 1])  # Upper limit for red hue, saturation, and value
+    mask2 = np.logical_and(np.all(hsv_img >= lower_red2, axis=-1), np.all(hsv_img <= upper_red2, axis=-1))
+
+    mask = np.logical_or(mask1, mask2)
 
     return np.sum(mask)
 
