@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 from extract_features import all
 
 # Specify where to pull images from and where to save them
-folder_path_in = r'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\src\MAIN_FILES\MAIN_DATA'
-folder_path_out = r'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\src\MAIN_FILES\MAIN_DATA'
+folder_path_in = r'MAIN_FILES\MAIN_DATA'
+folder_path_out = r'MAIN_FILES\MAIN_DATA'
 
 def image_resize(folder_path_in, folder_path_out):
 
