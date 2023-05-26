@@ -319,7 +319,7 @@ def main():
     image_resize(output_folder)
 
     # Set the path for the output CSV file
-    output_file = 'MAIN_FILES\MAIN_DATA\Input\features.csv'
+    output_file = r'MAIN_FILES\MAIN_DATA\Input\features.csv'
 
     # Initialize a list to store the extracted features
     features_list = []
