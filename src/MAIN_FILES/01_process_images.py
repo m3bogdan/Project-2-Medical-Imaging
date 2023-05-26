@@ -41,12 +41,10 @@ is_nevus =  label == 'NEV'
 
 num_images = len(image_id)
 
-
 #Make array to store features
 feature_names = ['red','green','blue']
 num_features = len(feature_names)
 features = np.zeros([num_images,num_features], dtype=np.float16)  
-
 
 #Loop through all images (now just 10 for demonstration)
 for i in np.arange(10):
