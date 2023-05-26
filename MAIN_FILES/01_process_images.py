@@ -8,6 +8,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from extract_features import all
+import io
+
 
 # Specify where to pull images from and where to save them
 folder_path_in = r'MAIN_FILES\MAIN_DATA'
