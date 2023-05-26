@@ -1,87 +1,79 @@
-
-import os
 import pandas as pd
-import numpy as np
-
-# Default packages for the minimum example
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import GroupKFold
-from sklearn.metrics import accuracy_score #example for measuring performance
+from sklearn.decomposition import PCA
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+import pickle
 
+def train_classifier(data_path, features_df):
+    """
+    Trains a classifier using the provided data and extracted features.
 
-import pickle #for saving/loading trained classifiers
+    Args:
+        data_path (str): Path to the data CSV file.
+        features_df (pd.DataFrame): DataFrame containing the extracted features.
 
+    Returns:
+        sklearn.linear_model.LogisticRegression: Trained logistic regression classifier.
+    """
+    # Load the data
+    df = pd.read_csv(data_path)
 
-#Where are the files
-file_data = '..' + os.sep + 'data' + os.sep +'metadata.csv'
-df = pd.read_csv(file_data)
-label = np.array(df['diagnostic'])
+    # Preprocess the diagnostic column
+    df['diagnostic'] = df['diagnostic'].map({'BCC': 1, 'MEL': 1, 'SCC': 1, 'ACK': 0, 'NEV': 0, 'SEK': 0})
 
+    # Merge the features DataFrame with the diagnostic column from the original DataFrame
+    df_merged = pd.merge(df[['img_id', 'diagnostic', 'patient_id']], features_df, on='img_id', how='inner')
 
-#Where did we store the features?
-file_features = 'features/features.csv'
-feature_names = ['red','green','blue']
+    # Split the data into training and testing sets
+    X = df_merged.drop(['img_id', 'diagnostic'], axis=1)
+    Y = df_merged['diagnostic']
 
-# Load the features - remember the example features are not informative
-df_features = pd.read_csv(file_features)
+    # Different classifiers to test out
+    classifiers = [LogisticRegression(), DecisionTreeClassifier(), KNeighborsClassifier()]
 
+    trained_classifiers = {}
 
-# Make the dataset, you can select different classes (see task 0)
-x = np.array(df_features[feature_names])
-y =  label == 'NEV'   #now True means healthy nevus, False means something else
-patient_id = df['patient_id']
+    for classifier in classifiers:
+        # Handle missing values in X
+        imputer = SimpleImputer(strategy='mean')
+        X_imputed = imputer.fit_transform(X)
 
+        # Check for constant features or features with zero variance
+        non_zero_var_indices = X_imputed.var(axis=0) != 0
+        if not any(non_zero_var_indices):
+            raise ValueError("All features have zero variance. Cannot perform PCA.")
 
-#Prepare cross-validation - images from the same patient must always stay together
-num_folds = 5
-group_kfold = GroupKFold(n_splits=num_folds)
-group_kfold.get_n_splits(x, y, patient_id)
+        # Standardize the feature matrix
+        X_std = StandardScaler().fit_transform(X_imputed[:, non_zero_var_indices])
 
+        # Perform PCA and retain the first four principal components
+        pca = PCA(0.99)
+        X_pca = pca.fit_transform(X_std)
 
-#Different classifiers to test out
-classifiers = [
-    KNeighborsClassifier(1),
-    KNeighborsClassifier(5)
-]
-num_classifiers = len(classifiers)
+        # Initialize and train the model using the reduced feature space
+        model = classifier.fit(X_pca, Y)
 
-      
-acc_val = np.empty([num_folds,num_classifiers])
+        # Save the trained classifier
+        trained_classifiers[type(classifier).__name__] = model
 
-for i, (train_index, val_index) in enumerate(group_kfold.split(x, y, patient_id)):
-    
-    x_train = x[train_index,:]
-    y_train = y[train_index]
-    x_val = x[val_index,:]
-    y_val = y[val_index]
-    
-    
-    for j, clf in enumerate(classifiers): 
-        
-        #Train the classifier
-        clf.fit(x_train,y_train)
-    
-        #Evaluate your metric of choice (accuracy is probably not the best choice)
-        acc_val[i,j] = accuracy_score(y_val, clf.predict(x_val))
-   
-    
-#Average over all folds
-average_acc = np.mean(acc_val,axis=0) 
-   
-print('Classifier 1 average accuracy={:.3f} '.format(average_acc[0]))
-print('Classifier 2 average accuracy={:.3f} '.format(average_acc[1]))
+    return trained_classifiers
 
+# Path to the data and extracted features
+data_path = r"data\full_data.csv"
+features_csv_path = r"MAIN_FILES\MAIN_DATA\Input\features.csv"
+model_path = r"MAIN_FILES\MAIN_DATA\Models"
 
+# Load the extracted features from the CSV file
+features_df = pd.read_csv(features_csv_path)
 
-#Let's say you now decided to use the 5-NN 
-classifier = KNeighborsClassifier(n_neighbors = 5)
+# Train the classifiers and get the trained models
+trained_classifiers = train_classifier(data_path, features_df)
 
-#It will be tested on external data, so we can try to maximize the use of our available data by training on 
-#ALL of x and y
-classifier = classifier.fit(x,y)
-
-#This is the classifier you need to save using pickle, add this to your zip file submission
-filename = 'groupXY_classifier.sav'
-pickle.dump(classifier, open(filename, 'wb'))
-
-
+# Save the trained models
+for classifier_name, classifier_model in trained_classifiers.items():
+    model_path = f"{classifier_name}.pkl"
+    with open(model_path, 'wb') as f:
+        pickle.dump(classifier_model, f)
