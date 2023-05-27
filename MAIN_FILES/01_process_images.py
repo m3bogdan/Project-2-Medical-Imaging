@@ -10,6 +10,11 @@ from skimage.feature import blob_log
 from skimage.filters import threshold_otsu
 from skimage.measure import label, regionprops
 
+
+#########################################
+###        Images preprocessing       ###
+#########################################
+
 def match_masks_with_pictures(mask_folder, picture_folder, output_folder):
     mask_files = os.listdir(mask_folder)
     picture_files = os.listdir(picture_folder)
