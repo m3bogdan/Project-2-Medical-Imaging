@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 import csv
+import shutil
 from math import sqrt
 from skimage import color, exposure
 from skimage.color import rgb2gray
@@ -9,49 +10,43 @@ from skimage.feature import blob_log
 from skimage.filters import threshold_otsu
 from skimage.measure import label, regionprops
 
-
-def combine_images(mask_folder, picture_folder, output_folder):
-    """
-    Combine masked images based on the provided masks and original pictures.
-
-    Args:
-        mask_folder (str): Path to the folder containing mask images.
-        picture_folder (str): Path to the folder containing original picture images.
-        output_folder (str): Path to the output folder to save the combined images.
-
-    Returns:
-        None
-    """
-    # Get a list of files in the mask folder
+def match_masks_with_pictures(mask_folder, picture_folder, output_folder):
     mask_files = os.listdir(mask_folder)
     picture_files = os.listdir(picture_folder)
 
-    # Iterate over each mask file
+    # Create the output folder if it doesn't exist
+    os.makedirs(output_folder, exist_ok=True)
+
     for mask_file in mask_files:
-        # Extract the file name without extension
-        mask_filename = os.path.splitext(mask_file)[0]
+        # Extract the common prefix from the mask file name
+        prefix = mask_file.split('_')[0]
 
-        # Check if the corresponding picture file exists
-        if mask_filename in picture_files:
-            # Construct the full paths for mask and picture files
-            mask_path = os.path.join(mask_folder, mask_file)
-            picture_path = os.path.join(picture_folder, mask_filename)
+        # Find the corresponding picture file
+        for picture_file in picture_files:
+            if picture_file.startswith(prefix):
+                # Construct the paths to the mask and picture files
+                mask_path = os.path.join(mask_folder, mask_file)
+                picture_path = os.path.join(picture_folder, picture_file)
 
-            # Load the mask and picture images
-            mask_image = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-            picture_image = cv2.imread(picture_path)
+                # Copy the mask file to the output folder
+                output_path = os.path.join(output_folder, mask_file)
+                shutil.copy2(mask_path, output_path)
 
-            # Apply the mask to the picture
-            masked_image = cv2.bitwise_and(picture_image, picture_image, mask=mask_image)
+                # Rename the picture file to match the mask file
+                new_picture_path = os.path.join(output_folder, picture_file.replace(prefix, 'PAT'))
+                if os.path.exists(new_picture_path):
+                    # Append a suffix to the new picture file name if it already exists
+                    base_name, extension = os.path.splitext(new_picture_path)
+                    suffix = 1
+                    while os.path.exists(new_picture_path):
+                        new_picture_path = f"{base_name}_{suffix}{extension}"
+                        suffix += 1
 
-            # Generate the output file name
-            output_file = mask_filename + '_masked.png'
+                os.rename(picture_path, new_picture_path)
 
-            # Construct the full path for the output file
-            output_path = os.path.join(output_folder, output_file)
+                break  # Move to the next mask file
 
-            # Save the masked image to the output folder
-            cv2.imwrite(output_path, masked_image)
+    print("Matching masks with pictures completed successfully.")
 
 
 def image_resize(folder_path_in):
@@ -81,6 +76,8 @@ def image_resize(folder_path_in):
 
         # Save the resized image, replacing the original file
         cv2.imwrite(image_path, resized)
+
+    print("Image resizing completed.")
 
 
 def measure_pigment_network(image):
@@ -292,12 +289,16 @@ def save_features_to_csv(features_list, output_file):
     Save a list of features dictionaries to a CSV file.
 
     Args:
-        features_list (list): List of features dictionaries.
+        features_list (list): List of dictionaries containing image features.
         output_file (str): Path to the output CSV file.
 
     Returns:
         None
     """
+    if not features_list:
+        print("No features found.")
+        return
+
     keys = features_list[0].keys()
 
     with open(output_file, 'w', newline='') as csvfile:
@@ -305,15 +306,17 @@ def save_features_to_csv(features_list, output_file):
         writer.writeheader()
         writer.writerows(features_list)
 
+    print(f"Features saved to {output_file}.")
+
 
 def main():
     # Set the paths for input folders
-    mask_folder = r'MAIN_FILES\MAIN_DATA\Input\Mask_folder'
-    picture_folder = r'MAIN_FILES\MAIN_DATA\Input\Picture_folder'
-    output_folder = r'MAIN_FILES\MAIN_DATA\Input\Processed_folder'
+    mask_folder = r'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\MAIN_FILES\MAIN_DATA\Input\Mask_folder'
+    picture_folder = r'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\MAIN_FILES\MAIN_DATA\Input\Picture_folder'
+    output_folder = r'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\MAIN_FILES\MAIN_DATA\Input\Processed_folder'
 
     # Combine masked images
-    combine_images(mask_folder, picture_folder, output_folder)
+    match_masks_with_pictures(mask_folder, picture_folder, output_folder)
 
     # Resize images in the output folder
     image_resize(output_folder)
