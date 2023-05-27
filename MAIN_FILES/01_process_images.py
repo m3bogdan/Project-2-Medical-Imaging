@@ -44,7 +44,7 @@ def match_masks_with_pictures(mask_folder, picture_folder, output_folder):
 
                 os.rename(picture_path, new_picture_path)
 
-                break  # Move to the next mask file
+                break
 
     print("Matching masks with pictures completed successfully.")
 
@@ -79,6 +79,10 @@ def image_resize(folder_path_in):
 
     print("Image resizing completed.")
 
+
+#########################################
+###Features coded based on the 7 steps###
+#########################################
 
 def measure_pigment_network(image):
     """
