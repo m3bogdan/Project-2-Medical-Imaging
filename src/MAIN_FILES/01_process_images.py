@@ -7,67 +7,37 @@ from os.path import exists
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from extract_features import all
 
-# Import our own file that has the feature extraction functions
+# Specify where to pull images from and where to save them
+folder_path_in = r'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\src\MAIN_FILES\MAIN_DATA'
+folder_path_out = r'C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\src\MAIN_FILES\MAIN_DATA'
 
-from extract_features import extract_features
+def image_resize(folder_path_in, folder_path_out):
 
-
-
-#-------------------
-# Main script
-#-------------------
-
-
-#Where is the raw data
-file_data = '..' + os.sep + 'data' + os.sep +'metadata.csv'
-path_image = '..' + os.sep + 'data' + os.sep + 'images' + os.sep + 'imgs_part_1'
-    
-  
-#Where we will store the features
-file_features = 'features/features.csv'
-
-
-#Read meta-data into a Pandas dataframe
-df = pd.read_csv(file_data)
-
-# Extract image IDs and labels from the data. 
-image_id = list(df['img_id'])
-label = np.array(df['diagnostic'])
-
-# Here you could decide to filter the data in some way (see task 0)
-# For example you can have a file selected_images.csv which stores the IDs of the files you need
-is_nevus =  label == 'NEV'
-
-num_images = len(image_id)
-
-
-#Make array to store features
-feature_names = ['red','green','blue']
-num_features = len(feature_names)
-features = np.zeros([num_images,num_features], dtype=np.float16)  
-
-
-#Loop through all images (now just 10 for demonstration)
-for i in np.arange(10):
-    
-    # Define filenames related to this image
-    file_image = path_image + os.sep + image_id[i] 
-    
-    if exists(file_image):
+    #Iterate through all the jpg and png files in the selected folder
+    for filename in [f for f in os.listdir(folder_path_in) if f.endswith('.jpg') or f.endswith('.png')]:
         
-        # Read the image
-        im = plt.imread(file_image)
-        im = np.float16(im)  
-    
-        # Measure features - this does not do anything useful yet!
-        x = extract_features(im) 
-           
-        # Store in the variable we created before
-        features[i,:] = x
-       
-        
-#Save the image_id used + features to a file   
-df_features = pd.DataFrame(features, columns=feature_names)     
-df_features.to_csv(file_features, index=False)  
-    
+        #Read in the image
+        image_path = folder_path_in + "/" + filename
+        original = io.imread(image_path)
+
+        # Ignore the alpha channel (e.g. transparency )
+        if original.shape[-1] == 4:
+            original = original[..., :3]
+
+        #Resize the image (preserving the proportions)
+        new_height = int(256)
+        new_width = int(new_height / original.shape[0] * original.shape[1])
+        resized = transform.resize(original, (new_height, new_width))
+
+        #Save the image in the new folder
+        new_path = folder_path_out + "/" + filename
+        io.imsave(new_path, img_as_ubyte(resized))
+
+
+
+#Specify where to pull images from and where to save them
+folder_path_in = "C:/Users/annam/Desktop/Vascular/Original"
+folder_path_out = "C:/Users/annam/Desktop/Vascular/Resized"
+image_resize(folder_path_in, folder_path_out)
