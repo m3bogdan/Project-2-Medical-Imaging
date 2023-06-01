@@ -5,7 +5,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.decomposition import PCA
-from xgboost import XGBClassifier
 from sklearn.base import clone
 import pickle
 
