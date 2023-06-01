@@ -1,5 +1,5 @@
 
-from skimage import io, img_as_ubyte
+from skimage import io, util
 import os
 import numpy as np
 import cv2
@@ -23,10 +23,9 @@ def mask_overlay(image_folder_path, mask_folder_path, folder_path_out):
 
         #Save the masked image in the new folder
         new_path = folder_path_out + "/" + filename
-        io.imsave(new_path, img_as_ubyte(masked_image))
+        io.imsave(new_path, util.img_as_ubyte(masked_image))
 
-image_folder_path = "C:/Users/annam/Desktop/Globules/Resized"
-mask_folder_path = "C:/Users/annam/Desktop/Globules/Segmentation"
-folder_path_out = "C:/Users/annam/Desktop/Globules/Masked"
-
+image_folder_path = "data/helpme/newimages"
+mask_folder_path = "data/helpme/newmask"
+folder_path_out = "data/helpme/color_mask"
 mask_overlay(image_folder_path, mask_folder_path, folder_path_out)
