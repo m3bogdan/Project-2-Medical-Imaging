@@ -78,7 +78,7 @@ def merge_data_frames(df1, df2):
     df_merged = pd.merge(df1, df2, on='img_id', how='inner')
     return df_merged
 
-
+####
 
 ########## TRAINING AND EVALUATING DIFFERENT CLASSIFIERS ##########
 
