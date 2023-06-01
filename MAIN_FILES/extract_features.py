@@ -7,7 +7,18 @@ from skimage.feature import blob_log
 from skimage.filters import threshold_otsu
 from skimage.measure import label, regionprops
 
+
+
 def measure_pigment_network(image):
+    """
+    Measure the coverage percentage of the pigment network in an image.
+
+    Args:
+        image (numpy.ndarray): Input image.
+
+    Returns:
+        float: Coverage percentage of the pigment network.
+    """
     lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
     l_channel, _, _ = cv2.split(lab_image)
 
@@ -22,6 +33,15 @@ def measure_pigment_network(image):
 
 
 def measure_blue_veil(image):
+    """
+    Measure the number of pixels exhibiting blue veil in an image.
+
+    Args:
+        image (numpy.ndarray): Input image.
+
+    Returns:
+        int: Number of pixels with blue veil.
+    """
     height, width, _ = image.shape
     count = 0
 
@@ -36,6 +56,15 @@ def measure_blue_veil(image):
 
 
 def measure_vascular(image):
+    """
+    Measure the presence of vascular structures in an image.
+
+    Args:
+        image (numpy.ndarray): Input image.
+
+    Returns:
+        int: Number of pixels representing vascular structures.
+    """
     red_channel = image[:, :, 0]
     enhanced_red_channel = exposure.adjust_gamma(red_channel, gamma=1)
     enhanced_image = image.copy()
@@ -56,6 +85,15 @@ def measure_vascular(image):
 
 
 def measure_globules(image):
+    """
+    Measure the number of globules in an image.
+
+    Args:
+        image (numpy.ndarray): Input image.
+
+    Returns:
+        int: Number of globules.
+    """
     image_gray = rgb2gray(image)
     inverted_image = 1 - image_gray
 
@@ -67,6 +105,15 @@ def measure_globules(image):
 
 
 def measure_streaks(image):
+    """
+    Measure the irregularity of streaks in an image.
+
+    Args:
+        image (numpy.ndarray): Input image.
+
+    Returns:
+        float: Irregularity measure of streaks.
+    """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -74,15 +121,23 @@ def measure_streaks(image):
     lesion_area = cv2.contourArea(contours[0])
     border_perimeter = cv2.arcLength(contours[0], True)
     if lesion_area == 0:
-        irregularity = 0 
+        irregularity = 0
     else:
         irregularity = (border_perimeter ** 2) / (4 * np.pi * lesion_area)
 
     return irregularity
 
 
-
 def measure_irregular_pigmentation(image):
+    """
+    Measure the coverage percentage of irregular pigmentation in an image.
+
+    Args:
+        image (numpy.ndarray): Input image.
+
+    Returns:
+        float: Coverage percentage of irregular pigmentation.
+    """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     threshold = threshold_otsu(gray)
     binary = gray > threshold
@@ -113,7 +168,17 @@ def measure_irregular_pigmentation(image):
 
     return coverage_percentage
 
+
 def measure_regression(image):
+    """
+    Measure the number of pixels representing regression structures in an image.
+
+    Args:
+        image (numpy.ndarray): Input image.
+
+    Returns:
+        int: Number of pixels representing regression structures.
+    """
     hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     lower_color = np.array([0, 0, 150])
     upper_color = np.array([180, 30, 255])
