@@ -1,79 +1,57 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.decomposition import PCA
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler
+from xgboost import XGBClassifier
+from sklearn.base import clone
 import pickle
 
-def train_classifier(data_path, features_df):
-    """
-    Trains a classifier using the provided data and extracted features.
+def load_data(features_file):
+    data = pd.read_csv(features_file)
+    return data
 
-    Args:
-        data_path (str): Path to the data CSV file.
-        features_df (pd.DataFrame): DataFrame containing the extracted features.
+def split_data(data):
+    X = data.drop('label', axis=1)
+    y = data['label']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
 
-    Returns:
-        sklearn.linear_model.LogisticRegression: Trained logistic regression classifier.
-    """
-    # Load the data
-    df = pd.read_csv(data_path)
-
-    # Preprocess the diagnostic column
-    df['diagnostic'] = df['diagnostic'].map({'BCC': 1, 'MEL': 1, 'SCC': 1, 'ACK': 0, 'NEV': 0, 'SEK': 0})
-
-    # Merge the features DataFrame with the diagnostic column from the original DataFrame
-    df_merged = pd.merge(df[['img_id', 'diagnostic', 'patient_id']], features_df, on='img_id', how='inner')
-
-    # Split the data into training and testing sets
-    X = df_merged.drop(['img_id', 'diagnostic'], axis=1)
-    Y = df_merged['diagnostic']
-
-    # Different classifiers to test out
-    classifiers = [LogisticRegression(), DecisionTreeClassifier(), KNeighborsClassifier()]
+def train_classifier(X_train, y_train):
+    classifiers = {
+        'RF': RandomForestClassifier(n_estimators=100, random_state=42),
+        'LR': LogisticRegression(max_iter=1000),
+        'KNN': KNeighborsClassifier(),
+        'DTC': DecisionTreeClassifier(),
+        'XGB': XGBClassifier(use_label_encoder=False, eval_metric='mlogloss')
+    }
+    
+    pca = PCA(n_components=0.95, random_state=42)
+    X_train_pca = pca.fit_transform(X_train)
 
     trained_classifiers = {}
 
-    for classifier in classifiers:
-        # Handle missing values in X
-        imputer = SimpleImputer(strategy='mean')
-        X_imputed = imputer.fit_transform(X)
+    for name, clf in classifiers.items():
+        clf.fit(X_train, y_train)
+        trained_classifiers[name] = clf
 
-        # Check for constant features or features with zero variance
-        non_zero_var_indices = X_imputed.var(axis=0) != 0
-        if not any(non_zero_var_indices):
-            raise ValueError("All features have zero variance. Cannot perform PCA.")
-
-        # Standardize the feature matrix
-        X_std = StandardScaler().fit_transform(X_imputed[:, non_zero_var_indices])
-
-        # Perform PCA and retain the first four principal components
-        pca = PCA(0.99)
-        X_pca = pca.fit_transform(X_std)
-
-        # Initialize and train the model using the reduced feature space
-        model = classifier.fit(X_pca, Y)
-
-        # Save the trained classifier
-        trained_classifiers[type(classifier).__name__] = model
+        clf_pca = clone(clf)
+        clf_pca.fit(X_train_pca, y_train)
+        trained_classifiers[f'PCA_{name}'] = clf_pca
 
     return trained_classifiers
 
-# Path to the data and extracted features
-data_path = r"data\full_data.csv"
-features_csv_path = r"MAIN_FILES\MAIN_DATA\Input\features.csv"
-model_path = r"MAIN_FILES\MAIN_DATA\Models"
+def save_model(models, model_file):
+    with open(model_file, 'wb') as file:
+        pickle.dump(models, file)
 
-# Load the extracted features from the CSV file
-features_df = pd.read_csv(features_csv_path)
+def main():
+    data = load_data('features.csv')
+    X_train, X_test, y_train, y_test = split_data(data)
+    models = train_classifier(X_train, y_train)
+    save_model(models, 'models.pkl')
 
-# Train the classifiers and get the trained models
-trained_classifiers = train_classifier(data_path, features_df)
-
-# Save the trained models
-for classifier_name, classifier_model in trained_classifiers.items():
-    model_path = f"{classifier_name}.pkl"
-    with open(model_path, 'wb') as f:
-        pickle.dump(classifier_model, f)
+if __name__ == '__main__':
+    main()
