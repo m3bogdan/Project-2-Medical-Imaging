@@ -2,7 +2,7 @@ import os
 import cv2
 import csv
 import shutil
-import extract_features as features
+import extract_features as feature
 from PIL import Image
 import os
 
@@ -72,15 +72,17 @@ def extract_features(image_path):
     """
     image = cv2.imread(image_path)
 
+
+    
     features = {}
     features['filename'] = os.path.basename(image_path)
-    features['pigment_network_coverage'] = features.measure_pigment_network(image)
-    features['blue_veil_pixels'] = features.measure_blue_veil(image)
-    features['vascular_pixels'] = features.measure_vascular(image)
-    features['globules_count'] = features.measure_globules(image)
-    features['streaks_irregularity'] = features.measure_streaks(image)
-    features['irregular_pigmentation_coverage'] = features.measure_irregular_pigmentation(image)
-    features['regression_pixels'] = features.measure_regression(image)
+    features['pigment_network_coverage'] = feature.measure_pigment_network(image)
+    features['blue_veil_pixels'] = feature.measure_blue_veil(image)
+    features['vascular_pixels'] = feature.measure_vascular(image)
+    features['globules_count'] = feature.measure_globules(image)
+    features['streaks_irregularity'] = feature.measure_streaks(image)
+    features['irregular_pigmentation_coverage'] = feature.measure_irregular_pigmentation(image)
+    features['regression_pixels'] = feature.measure_regression(image)
 
     return features
 
@@ -108,8 +110,6 @@ def save_features_to_csv(features_list, output_file):
         writer.writerows(features_list)
 
     print(f"Features saved to {output_file}.")
-
-
 
 
 def main():
