@@ -13,10 +13,11 @@ def load_data(features_file):
     return data
 
 def split_data(data):
-    X = data.drop('label', axis=1)
-    y = data['label']
+    X = data.drop('filename', axis=1)
+    y = data['filename']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
     return X_train, X_test, y_train, y_test
+
 
 def train_classifier_without_PCA(X_train, y_train):
     classifiers = {
@@ -40,7 +41,7 @@ def train_classifier_with_PCA(X_train, y_train):
         'DTC': DecisionTreeClassifier(),
     }
     
-    pca = PCA(n_components=0.95, random_state=42)
+    pca = PCA(n_components=0.99, random_state=42)
     X_train_pca = pca.fit_transform(X_train)
     
     trained_classifiers = {}
@@ -61,11 +62,11 @@ def save_model(models, model_file):
 
 
 def main():
-    data = load_data('features.csv')
+    data = load_data('features/features.csv')
     X_train, X_test, y_train, y_test = split_data(data)
     models = train_classifier_without_PCA(X_train, y_train)
-    models2 = train_classifier_with_PCA(X_train, y_train)
-    models.update(models2)
+    #models2 = train_classifier_with_PCA(X_train, y_train)
+    #models.update(models2)
     save_model(models, 'group02_classifiers.sav')
 
 if __name__ == '__main__':

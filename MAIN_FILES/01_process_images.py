@@ -115,9 +115,9 @@ def save_features_to_csv(features_list, output_file):
 def main():
 
     # Provide the paths to the folders containing the images
-    normal_folder = r"provide_path_to_normal_images_folder"
-    segmentation_folder = r"provide_path_to_segmentation_images_folder"
-    output_folder = r"provide_path_to_output_folder"
+    normal_folder = r"data/images/Masks/Color_mask/Training"
+    segmentation_folder = r"data/images/Masks/Color_mask/Training"
+    output_folder = r"data/images/Masks/Color_mask/Training"
 
     #Pre-process the images
     superpose_segmentation(normal_folder, segmentation_folder, output_folder)
