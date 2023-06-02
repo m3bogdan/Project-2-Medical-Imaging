@@ -60,7 +60,7 @@ def superpose_segmentation(normal_folder, segmentation_folder, output_folder):
 ###         Feature extraction        ###
 #########################################
 
-def extract_features(image_path):
+def extracting_features(image_path):
     """
     Extract features from an image.
 
@@ -115,16 +115,16 @@ def save_features_to_csv(features_list, output_file):
 def main():
 
     # Provide the paths to the folders containing the images
-    normal_folder = r"C:\Users\serru\Downloads\archive (1)\Helpmemore\image"
-    segmentation_folder = r"C:\Users\serru\Downloads\archive (1)\Helpmemore\Mask"
-    output_folder = r"C:\Users\serru\Downloads\archive (1)\Helpmemore\Combined"
+    normal_folder = r"provide_path_to_normal_images_folder"
+    segmentation_folder = r"provide_path_to_segmentation_images_folder"
+    output_folder = r"provide_path_to_output_folder"
 
     #Pre-process the images
     superpose_segmentation(normal_folder, segmentation_folder, output_folder)
 
 
     # Set the path for the output CSV file
-    output_file = r'MAIN_FILES\MAIN_DATA\Input\features.csv'
+    output_file = r'features/features.csv'
 
     # Initialize a list to store the extracted features
     features_list = []
@@ -133,7 +133,7 @@ def main():
     for filename in [f for f in os.listdir(output_folder) if f.endswith('.jpg') or f.endswith('.png')]:
         # Extract features from the image
         image_path = os.path.join(output_folder, filename)
-        features = extract_features(image_path)
+        features = extracting_features(image_path)
 
         # Append the features to the list
         features_list.append(features)

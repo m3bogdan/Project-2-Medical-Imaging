@@ -1,11 +1,13 @@
 import pandas as pd
+import cv2
+import os
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, f1_score
 from sklearn.model_selection import cross_val_score
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import pickle
 import numpy as np
-from 01_process_images import extract_features
+import extract_features as feature
 
 def load_model(model_file):
     with open(model_file, 'rb') as file:
@@ -34,13 +36,24 @@ def cross_validation_evaluation(models, X, y):
         print(f"Accuracy of {name}: {scores.mean():.2f} (+/- {scores.std() * 2:.2f})")
 
 def extract_features(image_path):
-    # Your feature extraction process goes here
-    pass
+    image = cv2.imread(image_path)
+    
+    features = {}
+    features['filename'] = os.path.basename(image_path)
+    features['pigment_network_coverage'] = feature.measure_pigment_network(image)
+    features['blue_veil_pixels'] = feature.measure_blue_veil(image)
+    features['vascular_pixels'] = feature.measure_vascular(image)
+    features['globules_count'] = feature.measure_globules(image)
+    features['streaks_irregularity'] = feature.measure_streaks(image)
+    features['irregular_pigmentation_coverage'] = feature.measure_irregular_pigmentation(image)
+    features['regression_pixels'] = feature.measure_regression(image)
+
+    return features
 
 def predict_from_image(models, image_path, best_model_name):
-    features = extract_features(image_path)
+    all_features = extract_features(image_path)
     scaler = StandardScaler()
-    features = scaler.fit_transform(features)
+    features = scaler.fit_transform(all_features)
 
     best_model = models[best_model_name]
     prediction = best_model.predict(features)
