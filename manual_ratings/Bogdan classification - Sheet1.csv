@@ -1,0 +1,12 @@
+ BOGDAN ,PAT_684_1302_588,PAT_705_4015_413,PAT_902_1718_852,PAT_908_1726_939,PAT_1014_86_861,PAT_1089_375_677,PAT_1545_1867_547,PAT_1554_2393_541,PAT_2042_4301_636,PAT_2051_4356_460
+Atypical pigment network,0,0,0,0,0,0,1,0,0,0
+Blue whitish veil,0,1,1,0,1,0,0,1,0,0
+Atypical vascular pattern,1,1,0,0,0,0,0,0,1,0
+Irregular dots/globules,0,0,1,1,0,0,1,0,0,1
+Irregular streaks,1,0,0,0,0,0,0,0,0,0
+Irregular pigmentation,0,0,1,1,0,0,1,1,0,1
+Regression structures,0,0,0,0,1,0,0,0,1,0
+,,,,,,,,,,
+Total Score,2,2,3,2,2,0,3,2,2,2
+My Prediction,No Cancer,No Cancer,Cancer,No Cancer,No Cancer,No Cancer,Cancer,No Cancer,No Cancer,No Cancer
+Right/Wrong,Wrong,Right,Right,Wrong,Right,Right,Wrong,Right,Right,Right

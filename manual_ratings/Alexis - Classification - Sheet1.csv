@@ -1,0 +1,12 @@
+ ALEXIS ,PAT_395_795_43,PAT_397_798_482,PAT_759_1538_566,PAT_771_1488_562,PAT_958_1812_62,PAT_963_1819_298,PAT_1310_1097_774,PAT_1381_1314_517,PAT_1842_3615_850,PAT_1942_3918_497
+Atypical pigment network,0,0,0,0,1,1,0,0,0,0
+Blue whitish veil,1,1,1,1,1,0,1,1,0,0
+Atypical vascular pattern,0,1,1,0,0,0,0,0,0,0
+Irregular dots/globules,1,1,0,1,1,1,0,0,0,0
+Irregular streaks,0,0,0,1,0,0,0,0,0,0
+Irregular pigmentation,1,0,1,0,1,0,0,1,0,0
+Regression structures,0,0,0,0,0,1,0,0,1,1
+,,,,,,,,,,
+Total Score,3,3,3,3,4,3,1,2,1,1
+My Prediction,Cancer,Cancer,Cancer,Cancer,Cancer,Cancer,No Cancer,No Cancer,No Cancer,No Cancer
+Right/Wrong,Right,Right,Right,Right,Wrong,Right,Right,Right,Right,Right
