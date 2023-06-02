@@ -1,6 +1,7 @@
 import pandas as pd
 import cv2
 import os
+import warnings
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, f1_score
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.decomposition import PCA
@@ -8,6 +9,8 @@ from sklearn.preprocessing import StandardScaler
 import pickle
 import numpy as np
 import extract_features as feature
+
+warnings.filterwarnings('ignore')
 
 def load_model(model_folder):
     models = {}
@@ -75,9 +78,16 @@ def extract_features(image_path):
 
 def predict_from_image(models, image_path):
     all_features = extract_features(image_path)
-    X = pd.DataFrame([all_features])
+
+    # Create DataFrame from the features
+    X = pd.DataFrame([all_features], columns=all_features.keys())
+
+    # Exclude non-numeric columns
+    X_numeric = X.select_dtypes(include=[np.number])
+
+    # Scale numeric features
     scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+    X_scaled = scaler.fit_transform(X_numeric)
 
     predictions = {}
     probabilities = {}
@@ -93,11 +103,12 @@ def predict_from_image(models, image_path):
 def main(model_folder):
     models = load_model(model_folder)
     
-    data = pd.read_csv(r"C:\Users\serru\Downloads\img\features.csv")
-    X = data.drop('filename', axis=1)
-    y = data['filename']
-    X_test = X.sample(n=5)  # assuming we evaluate on a small sample
-    y_test = y.loc[X_test.index]
+    data = pd.read_csv(r"C:\Users\serru\Downloads\img\merged_data.csv")
+    X = data.drop(['diagnostic', 'filename'], axis=1)
+    y = data['diagnostic']
+    sample_data = data.sample(n=5, random_state=42).reset_index(drop=True)
+    X_test = sample_data.drop(['diagnostic', 'filename'], axis=1)
+    y_test = sample_data['diagnostic']
 
     model_scores = evaluate_classifier(models, X_test, y_test)
     cross_validation_evaluation(models, X, y)
@@ -105,21 +116,22 @@ def main(model_folder):
     best_model_name = max(model_scores, key=lambda x: model_scores[x])
     print(f"Best model based on F1 Score is {best_model_name}")
 
-    image_folder = r"data/images/Masks/Color_mask/Test"  # replace with your image path
+    image_folder = r"C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\data\ColorMask\Training"
+    results_df = pd.DataFrame()
+
     for filename in os.listdir(image_folder):
-        # Construct the full path to the image file
         image_path = os.path.join(image_folder, filename)
-
-        # Predict for the current image
         predictions, probabilities = predict_from_image(models, image_path)
-
-        # Print the results for each model
         for model_name, prediction in predictions.items():
-            print("Model:", model_name)
-            print("Image:", filename)
-            print("Prediction:", prediction[model_name])
-            print("Probability:", probabilities[model_name])
-            print("-----------------------------------")
+            results_df = results_df.append({
+                'Model': model_name,
+                'Image': filename,
+                'Prediction': prediction[0],  # Assuming only one prediction per image
+                'Probability': probabilities[model_name][0][1]  # Probability of being class 1
+            }, ignore_index=True)
+
+    # Display the DataFrame
+    print(results_df)
 
 
 if __name__ == '__main__':
