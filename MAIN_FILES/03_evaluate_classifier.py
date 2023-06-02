@@ -52,29 +52,34 @@ def extract_features(image_path):
 
 def predict_from_image(models, image_path, best_model_name):
     all_features = extract_features(image_path)
+    X = pd.DataFrame([all_features])  
     scaler = StandardScaler()
-    features = scaler.fit_transform(all_features)
+    X_scaled = scaler.fit_transform(X)
 
     best_model = models[best_model_name]
-    prediction = best_model.predict(features)
-    return prediction
+    prediction = best_model.predict(X_scaled)
+    probability = best_model.predict_proba(X_scaled)
+
+    return prediction, probability
 
 def main():
-    models = load_model('models.pkl')
+    models = load_model('group02_classifiers.sav')
     data = pd.read_csv('features.csv')
     X = data.drop('label', axis=1)
     y = data['label']
     X_test = X.sample(5)  # assuming we evaluate on a small sample
-    y_test = y[X_test.index]
+    y_test = y.loc[X_test.index]
 
     model_scores = evaluate_classifier(models, X_test, y_test)
     cross_validation_evaluation(models, X, y)
 
-    best_model_name = max(model_scores, key=model_scores.get)
+    best_model_name = max(model_scores, key=lambda x: model_scores[x])
     print(f"Best model based on F1 Score is {best_model_name}")
 
-    image_path = "test_image.jpg"  # replace with your image path
-    print("Prediction from image:", predict_from_image(models, image_path, best_model_name))
+    image_path = "PUT THE IMAGE PATH HERE"  # replace with your image path
+    prediction, probability = predict_from_image(models, image_path, best_model_name)
+    print("Prediction:", prediction)
+    print("Probability:", probability)
 
 if __name__ == '__main__':
     main()

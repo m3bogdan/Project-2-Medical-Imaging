@@ -64,6 +64,8 @@ def main():
     data = load_data('features.csv')
     X_train, X_test, y_train, y_test = split_data(data)
     models = train_classifier_without_PCA(X_train, y_train)
+    models2 = train_classifier_with_PCA(X_train, y_train)
+    models.update(models2)
     save_model(models, 'group02_classifiers.sav')
 
 if __name__ == '__main__':
