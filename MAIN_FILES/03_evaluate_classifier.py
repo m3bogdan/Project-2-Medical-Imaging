@@ -2,16 +2,21 @@ import pandas as pd
 import cv2
 import os
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, f1_score
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import pickle
 import numpy as np
 import extract_features as feature
 
-def load_model(model_file):
-    with open(model_file, 'rb') as file:
-        models = pickle.load(file)
+def load_model(model_folder):
+    models = {}
+    for filename in os.listdir(model_folder):
+        model_file = os.path.join(model_folder, filename)
+        with open(model_file, 'rb') as file:
+            loaded_model = pickle.load(file)
+        model_name = os.path.splitext(filename)[0]
+        models[model_name] = loaded_model
     return models
 
 def evaluate_classifier(models, X_test, y_test):
@@ -32,12 +37,26 @@ def evaluate_classifier(models, X_test, y_test):
 
 def cross_validation_evaluation(models, X, y):
     for name, model in models.items():
-        skf = StratifiedKFold(n_splits=2)
-        scores = cross_val_score(model, X, y, cv=skf)
-        print(f"Accuracy of {name}: {scores.mean():.2f} (+/- {scores.std() * 2:.2f})")
-    # for name, model in models.items():
-    #     scores = cross_val_score(model, X, y, cv=5)
-    #     print(f"Accuracy of {name}: {scores.mean():.2f} (+/- {scores.std() * 2:.2f})")
+        sss = StratifiedShuffleSplit(n_splits=5, test_size=0.1, random_state=42)
+        print(f"Class Distribution for {name}:")
+        for train_index, test_index in sss.split(X, y):
+            train_classes = np.unique(y[train_index])
+            test_classes = np.unique(y[test_index])
+            print(f"Train Classes: {train_classes}")
+            print(f"Test Classes: {test_classes}")
+            X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+            y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+            f1 = f1_score(y_test, y_pred, average='weighted')
+            print(f"Model: {name}")
+            print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+            print(f"F1 Score: {f1}")
+            print("Classification Report:")
+            print(classification_report(y_test, y_pred))
+            print("Confusion Matrix:")
+            print(confusion_matrix(y_test, y_pred))
+            print("-----------------------------------\n")
 
 def extract_features(image_path):
     image = cv2.imread(image_path)
@@ -54,21 +73,27 @@ def extract_features(image_path):
 
     return features
 
-def predict_from_image(models, image_path, best_model_name):
+def predict_from_image(models, image_path):
     all_features = extract_features(image_path)
-    X = pd.DataFrame([all_features])  
+    X = pd.DataFrame([all_features])
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    best_model = models[best_model_name]
-    prediction = best_model.predict(X_scaled)
-    probability = best_model.predict_proba(X_scaled)
+    predictions = {}
+    probabilities = {}
 
-    return prediction, probability
+    for model_name, model in models.items():
+        prediction = model.predict(X_scaled)
+        probability = model.predict_proba(X_scaled)
+        predictions[model_name] = prediction
+        probabilities[model_name] = probability
 
-def main():
-    models = load_model('group02_classifiers.sav')
-    data = pd.read_csv('features/features.csv')
+    return predictions, probabilities
+
+def main(model_folder):
+    models = load_model(model_folder)
+    
+    data = pd.read_csv(r"C:\Users\serru\Downloads\img\features.csv")
     X = data.drop('filename', axis=1)
     y = data['filename']
     X_test = X.sample(n=5)  # assuming we evaluate on a small sample
@@ -86,14 +111,17 @@ def main():
         image_path = os.path.join(image_folder, filename)
 
         # Predict for the current image
-        prediction, probability = predict_from_image(models, image_path, best_model_name)
+        predictions, probabilities = predict_from_image(models, image_path)
 
-        # Print the results
-        print("Image:", filename)
-        print("Prediction:", prediction)
-        print("Probability:", probability)
-        print("-----------------------------------")
-    
+        # Print the results for each model
+        for model_name, prediction in predictions.items():
+            print("Model:", model_name)
+            print("Image:", filename)
+            print("Prediction:", prediction[model_name])
+            print("Probability:", probabilities[model_name])
+            print("-----------------------------------")
+
 
 if __name__ == '__main__':
-    main()
+    model_folder = r"C:\Users\serru\Downloads\img\Models"
+    main(model_folder)

@@ -115,16 +115,16 @@ def save_features_to_csv(features_list, output_file):
 def main():
 
     # Provide the paths to the folders containing the images
-    normal_folder = r"data/images/Masks/Color_mask/Training"
-    segmentation_folder = r"data/images/Masks/Color_mask/Training"
-    output_folder = r"data/images/Masks/Color_mask/Training"
+    normal_folder = r"C:\Users\serru\Downloads\img\Test"
+    segmentation_folder = r"C:\Users\serru\Downloads\img\Binary_mask\Test"
+    output_folder = r"C:\Users\serru\Downloads\img\Output"
 
     #Pre-process the images
     superpose_segmentation(normal_folder, segmentation_folder, output_folder)
 
 
     # Set the path for the output CSV file
-    output_file = r'features/features.csv'
+    output_file = r'C:\Users\serru\Downloads\img\features.csv'
 
     # Initialize a list to store the extracted features
     features_list = []
@@ -139,8 +139,12 @@ def main():
         features_list.append(features)
 
     # Save the features to a CSV file
-    save_features_to_csv(features_list, output_file)
-
+    # if no file exists, create one
+    if not os.path.exists(output_file):
+        save_features_to_csv(features_list, output_file)
+    else:
+        os.remove(output_file)
+        save_features_to_csv(features_list, output_file)
 
 if __name__ == '__main__':
     main()
