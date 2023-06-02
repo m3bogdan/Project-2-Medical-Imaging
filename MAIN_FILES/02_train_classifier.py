@@ -20,11 +20,9 @@ def split_data(data):
 
 def train_classifier(X_train, y_train):
     classifiers = {
-        'RF': RandomForestClassifier(n_estimators=100, random_state=42),
         'LR': LogisticRegression(max_iter=1000),
         'KNN': KNeighborsClassifier(),
         'DTC': DecisionTreeClassifier(),
-        'XGB': XGBClassifier(use_label_encoder=False, eval_metric='mlogloss')
     }
     
     pca = PCA(n_components=0.95, random_state=42)
