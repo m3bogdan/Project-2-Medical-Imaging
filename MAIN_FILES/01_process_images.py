@@ -2,7 +2,7 @@ import os
 import cv2
 import csv
 import shutil
-import extract_features as features
+import extract_features as feature
 from PIL import Image
 import os
 
@@ -60,7 +60,7 @@ def superpose_segmentation(normal_folder, segmentation_folder, output_folder):
 ###         Feature extraction        ###
 #########################################
 
-def extract_features(image_path):
+def extracting_features(image_path):
     """
     Extract features from an image.
 
@@ -72,15 +72,17 @@ def extract_features(image_path):
     """
     image = cv2.imread(image_path)
 
+
+    
     features = {}
     features['filename'] = os.path.basename(image_path)
-    features['pigment_network_coverage'] = features.measure_pigment_network(image)
-    features['blue_veil_pixels'] = features.measure_blue_veil(image)
-    features['vascular_pixels'] = features.measure_vascular(image)
-    features['globules_count'] = features.measure_globules(image)
-    features['streaks_irregularity'] = features.measure_streaks(image)
-    features['irregular_pigmentation_coverage'] = features.measure_irregular_pigmentation(image)
-    features['regression_pixels'] = features.measure_regression(image)
+    features['pigment_network_coverage'] = feature.measure_pigment_network(image)
+    features['blue_veil_pixels'] = feature.measure_blue_veil(image)
+    features['vascular_pixels'] = feature.measure_vascular(image)
+    features['globules_count'] = feature.measure_globules(image)
+    features['streaks_irregularity'] = feature.measure_streaks(image)
+    features['irregular_pigmentation_coverage'] = feature.measure_irregular_pigmentation(image)
+    features['regression_pixels'] = feature.measure_regression(image)
 
     return features
 
@@ -110,21 +112,19 @@ def save_features_to_csv(features_list, output_file):
     print(f"Features saved to {output_file}.")
 
 
-
-
 def main():
 
     # Provide the paths to the folders containing the images
-    normal_folder = r"C:\Users\serru\Downloads\archive (1)\Helpmemore\image"
-    segmentation_folder = r"C:\Users\serru\Downloads\archive (1)\Helpmemore\Mask"
-    output_folder = r"C:\Users\serru\Downloads\archive (1)\Helpmemore\Combined"
+    normal_folder = r"data/images/Masks/Color_mask/Training"
+    segmentation_folder = r"data/images/Masks/Color_mask/Training"
+    output_folder = r"data/images/Masks/Color_mask/Training"
 
     #Pre-process the images
     superpose_segmentation(normal_folder, segmentation_folder, output_folder)
 
 
     # Set the path for the output CSV file
-    output_file = r'MAIN_FILES\MAIN_DATA\Input\features.csv'
+    output_file = r'features/features.csv'
 
     # Initialize a list to store the extracted features
     features_list = []
@@ -133,7 +133,7 @@ def main():
     for filename in [f for f in os.listdir(output_folder) if f.endswith('.jpg') or f.endswith('.png')]:
         # Extract features from the image
         image_path = os.path.join(output_folder, filename)
-        features = extract_features(image_path)
+        features = extracting_features(image_path)
 
         # Append the features to the list
         features_list.append(features)
