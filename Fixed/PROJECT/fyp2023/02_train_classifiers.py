@@ -66,4 +66,8 @@ for pca in use_pca:
         print(f'F1 score = {average_f1[i]:.3f}')
         print(f'Accuracy= {average_acc[i]:.3f}')
         print(f'Precision = {average_precision[i]:.3f}')
-        print(f'Recall = {average_recall[i]:.3f}\n')
+        print(f'Recall = {average_recall[i]:.3f}')
+
+    # Save the best classifier with pickle
+    # The best classifier is the one with the highest average F1 score and precision and recall 
+    
