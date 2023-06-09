@@ -1,58 +1,60 @@
 import pickle #for loading your trained classifier
 from skimage import io
-
+import os
+from PIL import Image
 from extract_features import extract_features #our feature extraction
+import numpy as np
 
 
 
 # The function that should classify new images. 
 # The image and mask are the same size, and are already loaded using plt.imread
-def classify(combined_image):
-    
-     #Resize the image etc, if you did that during training
-    
-     #combined_image = apply_mask(img, mask)
+def classify(normal_image_path, segmentation_image_path):
+        
+    # Open the normal image and the segmentation image
+    normal_image = Image.open(normal_image_path).convert("RGBA")
+    segmentation_image = Image.open(segmentation_image_path).convert("RGBA")
+
+    # Resize the images to 256x256 pixels
+    normal_image = normal_image.resize((256, 256))
+    segmentation_image = segmentation_image.resize((256, 256))
+
+    # Invert the segmentation image
+    inverted_segmentation = Image.eval(segmentation_image, lambda x: 255 - x)
+
+    # Create a binary mask from the inverted segmentation image
+    mask = inverted_segmentation.split()[0].point(lambda x: 255 if x == 0 else 0).convert("L")
+
+    # Apply the mask to the normal image
+    normal_image.putalpha(mask)
+
+    # Create a black background
+    background = Image.new("RGBA", normal_image.size, (0, 0, 0, 255))
+    # Composite the normal image with the black background
+    combined_image = Image.alpha_composite(background, normal_image)
 
 
      #Extract features (the same ones that you used for training)
-     X = list(extract_features(combined_image).values())
-     X = np.array(X).reshape(1, -1)   
+    X = list(extract_features(combined_image).values())
+    X = np.array(X).reshape(1, -1)   
      
      # Load the trained classifier
-     classifier = pickle.load(open('group02_classifier.sav', 'rb'))
+    classifier = pickle.load(open('group02_classifier.sav', 'rb'))
 
      # Use it on this example to predict the label AND posterior probability
-     pred_label = classifier.predict(X)
-     pred_prob = classifier.predict_proba(X)
+    pred_label = classifier.predict(X)
+    pred_prob = classifier.predict_proba(X)
 
      # Get the probability for the predicted class
-     predicted_class_prob = pred_prob[0, pred_label[0]]
+    predicted_class_prob = pred_prob[0, pred_label[0]]
 
-     print('predicted label is', pred_label)
-     print('predicted probability for the predicted class is', predicted_class_prob)
+    print('predicted label is', pred_label)
+    print('predicted probability for the predicted class is', predicted_class_prob)
      
-     return pred_label, predicted_class_prob
+    return pred_label, predicted_class_prob
 
-from skimage import io
-import numpy as np
-
-def apply_mask(image, mask):
-
-
-
-    # Ensure image and mask have the same shape
-    assert image.shape[:2] == mask.shape[:2], "Image and mask sizes don't match"
-
-    # Create a copy of the image and apply the mask
-    masked_image = np.copy(image)
-    masked_image[np.where(mask == 0)] = 0
-
-    return masked_image
-
-import os
-combined_path = "C:/Users/annam/Desktop/Binary masks/Resized/PAT_109_868_723.png"
-combined = io.imread(combined_path)
-#masked_image = apply_mask(image_path, mask_path)
+normal_image_path =""
+segmentation_image_path =""
 test_path = "C:/Users/annam/Desktop/Binary masks/Resized"
 for filename in os.listdir(test_path):
     if filename.endswith(('.jpg', '.png')):
