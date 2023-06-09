@@ -75,34 +75,34 @@ for pca in use_pca:
         print(f'Recall = {average_recall[i]:.3f}')
         print(f'ROC AUC = {average_roc_auc[i]:.3f}')
 
-    # Plot ROC curve for best classifier
-    best_classifier = np.argmax(average_f1 + average_precision + average_recall)
-    clf = classifiers[best_classifier]
-    clf.fit(x_train, y_train)
-    y_score = clf.predict_proba(x_val)
-    fpr, tpr, _ = roc_curve(y_val, y_score[:, 1])
-    roc_auc = auc(fpr, tpr)
-    plt.figure()
-    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic for ' + classifier_name)
-    plt.legend(loc="lower right")
-    plt.show()
 
-    # Save the best model
-    if pca:
-        print(f"Best classifier is {classifier_name} with PCA")
-        pickle.dump(clf, open(f"classifiers/classifier_pca_{classifier_name}.pkl", 'wb'))
-    else:
-        print(f"Best classifier is {classifier_name} without PCA")
-        pickle.dump(clf, open(f"classifiers/classifier_{classifier_name}.pkl", 'wb'))
 
-print("##############################################")
+#Let's say you now decided to use the 5-NN 
+classifier = KNN(n_neighbors = 5)
 
-# Save the PCA transformer
-if pca:
-    pickle.dump(pca_transformer, open(f"classifiers/pca_transformer.pkl", 'wb'))
+#It will be tested on external data, so we can try to maximize the use of our available data by training on 
+#ALL of x and y
+classifier = classifier.fit(x,y)
+
+#This is the classifier you need to save using pickle, add this to your zip file submission
+filename = 'groupXY_classifier.sav'
+pickle.dump(classifier, open(filename, 'wb'))
+
+
+# Plot ROC curve for best classifier
+
+clf = classifier
+clf.fit(x_train, y_train)
+y_score = clf.predict_proba(x_val)
+fpr, tpr, _ = roc_curve(y_val, y_score[:, 1])
+roc_auc = auc(fpr, tpr)
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title("Receiver Operating Characteristic")
+plt.legend(loc="lower right")
+plt.show()
