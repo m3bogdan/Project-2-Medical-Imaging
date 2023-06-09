@@ -70,7 +70,8 @@ def save_model(models, model_path):
             pickle.dump(model, file)
 
 def main():
-    data = load_data(r"C:\Users\serru\Downloads\img\features.csv")
+    datacsv = load_data(r"C:\Users\serru\OneDrive\Documents\Project2\Project-2-Medical-Imaging\data\csv\full_data.csv")
+    datafeatures = load_data(r"C:\Users\serru\Downloads\img\features.csv")
     X_train, X_test, y_train, y_test = split_data(data)
     model_path = r"C:\Users\serru\Downloads\img\Models"
     models = train_classifier_without_PCA(X_train, y_train)
