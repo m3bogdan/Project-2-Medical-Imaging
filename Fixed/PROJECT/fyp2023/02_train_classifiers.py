@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn.decomposition import PCA
 import pickle 
 
-features = "features/features.csv"
+features = "C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/features/features.csv"
 
 df_merged = pd.read_csv(features)
 
@@ -30,7 +30,7 @@ use_pca = [False, True]
 for pca in use_pca:
     print(f"Running with PCA: {pca}")
     if pca:
-        pca_transformer = PCA(n_components=7)
+        pca_transformer = PCA(n_components=5)
 
     acc_val = np.empty([num_folds, num_classifiers])
     f1_val = np.empty([num_folds, num_classifiers])
@@ -66,4 +66,29 @@ for pca in use_pca:
         print(f'F1 score = {average_f1[i]:.3f}')
         print(f'Accuracy= {average_acc[i]:.3f}')
         print(f'Precision = {average_precision[i]:.3f}')
-        print(f'Recall = {average_recall[i]:.3f}\n')
+        print(f'Recall = {average_recall[i]:.3f}')
+
+
+# #Let's say you now decided to use the 5-NN 
+# classifier = KNN(5)
+
+# #It will be tested on external data, so we can try to maximize the use of our available data by training on 
+# #ALL of x and y
+# classifier = classifier.fit(x,y)
+
+# #This is the classifier you need to save using pickle, add this to your zip file submission
+# filename = 'groupXY_classifier.sav'
+# pickle.dump(classifier, open(filename, 'wb'))
+
+best_classifier = np.argmax(average_f1 + average_precision + average_recall)
+print(f"Best classifier is {classifiers[best_classifier]}")
+if pca:
+    pickle.dump(classifiers[best_classifier], open(f"C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/data/trained_classifier/classifier_pca_{best_classifier}.pkl", 'wb'))
+else:
+    pickle.dump(classifiers[best_classifier], open(f"C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/data/trained_classifier/classifier_{best_classifier}.pkl", 'wb'))
+
+print("##############################################")
+
+# Save the PCA transformer
+if pca:
+    pickle.dump(pca_transformer, open(f"C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/data/trained_classifier/pca_transformer.pkl", 'wb'))
