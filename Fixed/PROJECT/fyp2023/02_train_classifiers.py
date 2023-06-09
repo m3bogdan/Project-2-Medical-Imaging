@@ -67,7 +67,8 @@ for i, classifier_name in enumerate(["KNN", "LR", "DTC"]):
     
 # Feature selection with variance threshold
 print("Running with variance threshold feature selection")
-selector = VarianceThreshold()
+threshold_value = 0.1
+selector = VarianceThreshold(threshold=threshold_value)
 x_selected = selector.fit_transform(x)
 
 acc_val = np.empty([num_folds, num_classifiers])
@@ -108,7 +109,7 @@ for i, classifier_name in enumerate(["KNN", "LR", "DTC"]):
 
 # Feature selection with PCA
 print("Running with PCA feature selection")
-pca_transformer = PCA(n_components=5)
+pca_transformer = PCA(n_components=3)
 x_pca = pca_transformer.fit_transform(x)
 
 acc_val = np.empty([num_folds, num_classifiers])
