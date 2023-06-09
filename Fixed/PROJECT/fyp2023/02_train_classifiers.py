@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn.decomposition import PCA
 import pickle 
 
-features = "features/features.csv"
+features = "C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/features/features.csv"
 
 df_merged = pd.read_csv(features)
 
@@ -30,7 +30,7 @@ use_pca = [False, True]
 for pca in use_pca:
     print(f"Running with PCA: {pca}")
     if pca:
-        pca_transformer = PCA(n_components=7)
+        pca_transformer = PCA(n_components=5)
 
     acc_val = np.empty([num_folds, num_classifiers])
     f1_val = np.empty([num_folds, num_classifiers])
@@ -66,8 +66,4 @@ for pca in use_pca:
         print(f'F1 score = {average_f1[i]:.3f}')
         print(f'Accuracy= {average_acc[i]:.3f}')
         print(f'Precision = {average_precision[i]:.3f}')
-        print(f'Recall = {average_recall[i]:.3f}')
-
-    # Save the best classifier with pickle
-    # The best classifier is the one with the highest average F1 score and precision and recall 
-    
+        print(f'Recall = {average_recall[i]:.3f}\n')
