@@ -13,7 +13,7 @@ import pickle #for saving/loading trained classifiers
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
 
 
-features = "PROJECT/fyp2023/features/features.csv"
+features = "features/features.csv"
 
 df_merged = pd.read_csv(features)
 
@@ -97,7 +97,7 @@ classifier = classifier.fit(x,y)
 
 
 #This is the classifier you need to save using pickle, add this to your zip file submission
-filename = 'groupXY_classifier.sav'
+filename = 'group02_classifier.sav'
 pickle.dump(classifier, open(filename, 'wb'))
 
 

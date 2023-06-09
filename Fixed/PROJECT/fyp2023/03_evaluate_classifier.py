@@ -19,7 +19,7 @@ def classify(combined_image):
      X = np.array(X).reshape(1, -1)   
      
      # Load the trained classifier
-     classifier = pickle.load(open('groupXY_classifier.sav', 'rb'))
+     classifier = pickle.load(open('group02_classifier.sav', 'rb'))
 
      # Use it on this example to predict the label AND posterior probability
      pred_label = classifier.predict(X)

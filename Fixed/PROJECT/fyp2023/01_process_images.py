@@ -20,11 +20,11 @@ from extract_features import extract_features
 
 
 #Where is the raw data
-file_data = "PROJECT/fyp2023/data/metadata.csv"
-path_image = "PROJECT/fyp2023/data/images/imgs_part_1"
+file_data = "data/metadata.csv"
+path_image = "data/images/imgs_part_1"
 
 #Where we will store the features
-file_features = "PROJECT/fyp2023/features/features.csv"
+file_features = "features/features.csv"
 
 
 #Read meta-data into a Pandas dataframe
