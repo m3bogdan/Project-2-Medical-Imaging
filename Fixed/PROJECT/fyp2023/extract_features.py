@@ -18,22 +18,22 @@ from skimage.transform import resize
 
 # Define the function to extract features
 def extract_features(image):
-    
-    
     # Ignore the alpha channel (e.g. transparency)
     if image.shape[-1] == 4:
         image = image[..., :3]
 
+    # Resize the image to (256, 256)
     resized_image = resize(image, (256, 256))
-    image = resized_image.astype(np.uint8)
+    # Convert the resized float image to 8-bit
+    resized_image = (resized_image * 255).astype(np.uint8)
 
-    feature_1 = measure_pigment_network(image)
-    feature_2 = measure_blue_veil(image)
-    feature_3 = measure_vascular(image)
-    feature_4 = measure_globules(image)
-    feature_5 = measure_streaks(image)
-    feature_6 = measure_irregular_pigmentation(image)
-    feature_7 = measure_regression(image)
+    feature_1 = measure_pigment_network(resized_image)
+    feature_2 = measure_blue_veil(resized_image)
+    feature_3 = measure_vascular(resized_image)
+    feature_4 = measure_globules(resized_image)
+    feature_5 = measure_streaks(resized_image)
+    feature_6 = measure_irregular_pigmentation(resized_image)
+    feature_7 = measure_regression(resized_image)
 
     features_dict = {
         "1: pigment network": feature_1,

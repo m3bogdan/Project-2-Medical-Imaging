@@ -14,7 +14,7 @@ from sklearn.preprocessing import label_binarize
 import pickle
 
 # Define relative path
-relative_path = './features/features.csv'
+relative_path = r'Fixed\PROJECT\fyp2023\features\features.csv'
 
 # Define classifiers
 classifiers = [KNN(5), LR(max_iter=5000), DTC()]

@@ -4,16 +4,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io
-
 # Import our own file that has the feature extraction functions
 from extract_features import extract_features
 
 #Where is the raw provided data
-file_data = "./data/metadata.csv"
+file_data = r"Fixed\PROJECT\fyp2023\data\metadata.csv"
 path_image = r"C:\Users\serru\Downloads\img\Superposed"
 
 #Where we will store the features
-file_features = "./features/features.csv"
+file_features = r"Fixed\PROJECT\fyp2023\features\features.csv"
 
 #Read meta-data into a Pandas dataframe
 df = pd.read_csv(file_data)
