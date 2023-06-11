@@ -25,7 +25,6 @@ def extract_features(image):
         image = image[..., :3]
 
     resized_image = resize(image, (256, 256))
-
     image = resized_image.astype(np.uint8)
 
     feature_1 = measure_pigment_network(image)

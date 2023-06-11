@@ -36,7 +36,7 @@ def classify(normal_image, segmentation_image):
     X = np.array(X).reshape(1, -1)   
 
     # Load the trained classifier
-    classifier = pickle.load(open('group02_classifier.sav', 'rb'))
+    classifier = pickle.load(open("C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/group02_classifier.sav", 'rb'))
 
     # Use it on this example to predict the label AND posterior probability
     pred_label = classifier.predict(X)
@@ -57,8 +57,8 @@ def classify(normal_image, segmentation_image):
     print(f"The probability from 0-1 (0 being healthy and 1 cancerous) is: {predicted_class_prob}")
 
 # Your image paths
-normal_image_path = r"C:\Users\serru\Downloads\img\Binary_mask\Test\PAT_26_37_865.png"
-segmentation_image_path = r"C:\Users\serru\Downloads\img\Test_resized\PAT_26_37_865.png"
+normal_image_path = "C:/Users/annam/Desktop/Images/Resized/PAT_26_37_865.png"
+segmentation_image_path = "C:/Users/annam/Desktop/Binary masks/Resized/PAT_26_37_865.png"
 
 # Load the images
 normal_image = plt.imread(normal_image_path)

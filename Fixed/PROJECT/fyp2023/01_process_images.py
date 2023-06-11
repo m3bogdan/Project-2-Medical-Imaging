@@ -13,12 +13,6 @@ from skimage import io
 from extract_features import extract_features
 
 
-
-#-------------------
-# Main script
-#-------------------
-
-
 #Where is the raw data
 file_data = "ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/data/metadata.csv"
 path_image = "C:/Users/annam/Desktop/Masked_images"
