@@ -1,7 +1,3 @@
-"""
-FYP project imaging
-"""
-
 import os
 from os.path import exists
 import pandas as pd
@@ -12,19 +8,16 @@ from skimage import io
 # Import our own file that has the feature extraction functions
 from extract_features import extract_features
 
-
-#Where is the raw data
-file_data = "ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/data/metadata.csv"
-path_image = "C:/Users/annam/Desktop/Masked_images"
+#Where is the raw provided data
+file_data = "./data/metadata.csv"
+path_image = "*Path to the folder containing the Masked_images*"
 
 #Where we will store the features
-file_features = "ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/features/features.csv"
-
+file_features = "./features/features.csv"
 
 #Read meta-data into a Pandas dataframe
 df = pd.read_csv(file_data)
 df['diagnostic'] = df['diagnostic'].map({'BCC': 1, 'MEL': 1, 'SCC': 1, 'ACK': 0, 'NEV': 0, 'SEK': 0})
-
 
 def extract_features_folder(path_image):
     features = []
@@ -43,7 +36,4 @@ def extract_features_folder(path_image):
 
 # Merge the features DataFrame with the diagnostic column from the original DataFrame
 df_merged = pd.merge(df[['img_id', 'diagnostic', 'patient_id']], extract_features_folder(path_image), on='img_id', how='inner')   
-df_merged.to_csv(file_features, index=False)  
-
-
-
+df_merged.to_csv(file_features, index=False) 
