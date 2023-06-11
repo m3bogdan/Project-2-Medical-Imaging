@@ -10,7 +10,7 @@ from extract_features import extract_features
 
 #Where is the raw provided data
 file_data = "./data/metadata.csv"
-path_image = "*Path to the folder containing the Masked_images*"
+path_image = r"C:\Users\serru\Downloads\img\Superposed"
 
 #Where we will store the features
 file_features = "./features/features.csv"
@@ -36,4 +36,5 @@ def extract_features_folder(path_image):
 
 # Merge the features DataFrame with the diagnostic column from the original DataFrame
 df_merged = pd.merge(df[['img_id', 'diagnostic', 'patient_id']], extract_features_folder(path_image), on='img_id', how='inner')   
-df_merged.to_csv(file_features, index=False) 
+df_merged.to_csv(file_features, index=False)
+print("01_Process_Images: Done")
