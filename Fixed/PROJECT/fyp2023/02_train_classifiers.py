@@ -15,6 +15,7 @@ import pickle
 
 # Define relative path for the features
 relative_path = "./Project-2_github_repo/Fixed/PROJECT/fyp2023/features/features.csv"
+
 # Define classifiers
 classifiers = [KNN(5), LR(max_iter=5000), DTC()]
 classifier_names = ["KNN", "LR", "DTC"]
