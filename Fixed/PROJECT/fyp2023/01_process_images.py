@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io
-
 # Import our own file that has the feature extraction functions
 from extract_features import extract_features
 
