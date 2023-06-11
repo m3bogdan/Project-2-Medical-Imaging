@@ -155,7 +155,7 @@ classifier = KNN(n_neighbors=5)
 classifier = classifier.fit(x, y)
 
 # This is the classifier you need to save using pickle, add this to your zip file submission
-filename = 'groupXY_classifier.sav'
+filename = 'group02_classifier.sav'
 pickle.dump(classifier, open(filename, 'wb'))
 
 # Plot ROC curve for best classifier
