@@ -20,11 +20,11 @@ from extract_features import extract_features
 
 
 #Where is the raw data
-file_data = r"ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/data/metadata.csv"
-path_image = "C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/All_images/Bad_masked_test_training_validation/Cross"
+file_data = "ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/data/metadata.csv"
+path_image = "C:/Users/annam/Desktop/Masked_images"
 
 #Where we will store the features
-file_features = r"ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/features/features.csv"
+file_features = "ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/features/features.csv"
 
 
 #Read meta-data into a Pandas dataframe
@@ -39,10 +39,6 @@ def extract_features_folder(path_image):
         if filename.endswith(('.jpg', '.png')):
             image_path = os.path.join(path_image, filename)
             image = io.imread(image_path)
-
-            # Ignore the alpha channel (e.g. transparency)
-            if image.shape[-1] == 4:
-                image = image[..., :3]
 
             image_features = extract_features(image)
             image_features["img_id"] = filename

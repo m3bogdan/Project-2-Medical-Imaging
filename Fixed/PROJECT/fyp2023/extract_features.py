@@ -9,9 +9,7 @@ from skimage.color import rgb2gray
 from skimage.feature import blob_log
 from skimage.filters import threshold_otsu
 from skimage.measure import label, regionprops
-import os
-from skimage import io
-import pandas as pd
+from skimage.transform import resize
 
 
 
@@ -20,6 +18,16 @@ import pandas as pd
 
 # Define the function to extract features
 def extract_features(image):
+    
+    
+    # Ignore the alpha channel (e.g. transparency)
+    if image.shape[-1] == 4:
+        image = image[..., :3]
+
+    resized_image = resize(image, (256, 256))
+
+    image = resized_image.astype(np.uint8)
+
     feature_1 = measure_pigment_network(image)
     feature_2 = measure_blue_veil(image)
     feature_3 = measure_vascular(image)
