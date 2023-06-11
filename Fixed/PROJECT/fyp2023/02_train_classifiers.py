@@ -13,9 +13,8 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import label_binarize
 import pickle
 
-# Define relative path
-relative_path = './features/features.csv'
-
+# Define relative path for the features
+relative_path = "./Project-2_github_repo/Fixed/PROJECT/fyp2023/features/features.csv"
 # Define classifiers
 classifiers = [KNN(5), LR(max_iter=5000), DTC()]
 classifier_names = ["KNN", "LR", "DTC"]
@@ -83,12 +82,12 @@ x_pca = pca_transformer.fit_transform(x)
 get_metrics(classifiers, x_pca, y, patient_id, "With PCA")
 
 # Define the path where to save the file
-pickle_path = './models/'
+pickle_path = 'Project-2_github_repo/Fixed/PROJECT/fyp2023/models'
 
 # Chosen classifier
 classifier = KNN(n_neighbors=5)
 classifier = classifier.fit(x, y)
-filename = 'groupXY_classifier.sav'
+filename = 'group02_classifier.sav'
 
 # Check if the path exists, if not, create it
 if not os.path.exists(pickle_path):
