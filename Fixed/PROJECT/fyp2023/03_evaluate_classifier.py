@@ -47,8 +47,6 @@ def classify(normal_image, segmentation_image):
     print('predicted label is', pred_label)
     print('predicted probability for the predicted class is', predicted_class_prob)
 
-    return pred_label, predicted_class_prob
-
 # Your image paths
 normal_image_path = r"C:\Users\serru\Downloads\img\Binary_mask\Test\PAT_26_37_865.png"
 segmentation_image_path = r"C:\Users\serru\Downloads\img\Test_resized\PAT_26_37_865.png"
