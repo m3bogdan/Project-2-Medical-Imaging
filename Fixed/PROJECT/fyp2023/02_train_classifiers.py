@@ -13,150 +13,89 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import label_binarize
 import pickle
 
-features = "C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/features/features.csv"
+# Define relative path
+relative_path = './features/features.csv'
 
-df_merged = pd.read_csv(features)
+# Define classifiers
+classifiers = [KNN(5), LR(max_iter=5000), DTC()]
+classifier_names = ["KNN", "LR", "DTC"]
+num_classifiers = len(classifiers)
+num_folds = 5
 
+# Read data
+df_merged = pd.read_csv(relative_path)
 x = np.array(df_merged.drop(['img_id', 'diagnostic', 'patient_id'], axis=1))
 y = df_merged['diagnostic']
 patient_id = df_merged['img_id']
-
-num_folds = 5
 group_kfold = GroupKFold(n_splits=num_folds)
 
-classifiers = [KNN(5), LR(max_iter=5000), DTC()]
-num_classifiers = len(classifiers)
+# Define functions to avoid code repetition
+def get_metrics(classifiers, x, y, patient_id, feature_selection=""):
+    acc_val = np.empty([num_folds, num_classifiers])
+    f1_val = np.empty([num_folds, num_classifiers])
+    precision = np.empty([num_folds, num_classifiers])
+    recall = np.empty([num_folds, num_classifiers])
+    roc_auc = np.empty([num_folds, num_classifiers])
+    for i, (train_index, val_index) in enumerate(group_kfold.split(x, y, patient_id)):
+        x_train, x_val = x[train_index, :], x[val_index, :]
+        y_train, y_val = y[train_index], y[val_index]
+        for j, clf in enumerate(classifiers): 
+            clf.fit(x_train, y_train)
+            predictions = clf.predict(x_val)
+            acc_val[i, j] = accuracy_score(y_val, predictions)
+            f1_val[i, j] = f1_score(y_val, predictions)
+            precision[i, j] = precision_score(y_val, predictions, zero_division=0)
+            recall[i, j] = recall_score(y_val, predictions)
+            roc_auc[i, j] = roc_auc_score(y_val, predictions)
+    print_metrics(acc_val, f1_val, precision, recall, roc_auc, feature_selection)
+    return x_train, y_train, x_val, y_val  # return these for later use in ROC plot
+
+def print_metrics(acc_val, f1_val, precision, recall, roc_auc, feature_selection):
+    average_acc = np.mean(acc_val, axis=0) 
+    average_f1 = np.mean(f1_val, axis=0)
+    average_precision = np.mean(precision, axis=0)
+    average_recall = np.mean(recall, axis=0)
+    average_roc_auc = np.mean(roc_auc, axis=0)
+    print(f"{feature_selection} feature selection:")
+    for i, classifier_name in enumerate(classifier_names):
+        print(f"############ Classifier {i+1} - {classifier_name}:")
+        print(f'Average F1 score = {average_f1[i]:.3f}')
+        print(f'Average Accuracy = {average_acc[i]:.3f}')
+        print(f'Average Precision = {average_precision[i]:.3f}')
+        print(f'Average Recall = {average_recall[i]:.3f}')
+        print(f'Average ROC AUC = {average_roc_auc[i]:.3f}')
 
 # Normal feature selection
 print("Running without feature selection")
-acc_val = np.empty([num_folds, num_classifiers])
-f1_val = np.empty([num_folds, num_classifiers])
-precision = np.empty([num_folds, num_classifiers])
-recall = np.empty([num_folds, num_classifiers])
-roc_auc = np.empty([num_folds, num_classifiers])
+x_train, y_train, x_val, y_val = get_metrics(classifiers, x, y, patient_id)
 
-for i, (train_index, val_index) in enumerate(group_kfold.split(x, y, patient_id)):
-    x_train, x_val = x[train_index, :], x[val_index, :]
-    y_train, y_val = y[train_index], y[val_index]
-
-    for j, clf in enumerate(classifiers): 
-        clf.fit(x_train, y_train)
-
-        predictions = clf.predict(x_val)
-        acc_val[i, j] = accuracy_score(y_val, predictions)
-        f1_val[i, j] = f1_score(y_val, predictions)
-        precision[i, j] = precision_score(y_val, predictions, zero_division=0)
-        recall[i, j] = recall_score(y_val, predictions)
-        roc_auc[i, j] = roc_auc_score(y_val, predictions)
-
-average_acc = np.mean(acc_val, axis=0) 
-average_f1 = np.mean(f1_val, axis=0)
-average_precision = np.mean(precision, axis=0)
-average_recall = np.mean(recall, axis=0)
-average_roc_auc = np.mean(roc_auc, axis=0)
-
-# Print out the results
-print("Without feature selection:")
-for i, classifier_name in enumerate(["KNN", "LR", "DTC"]):
-    print(f"############ Classifier {i+1} - {classifier_name}:")
-    print(f'F1 score = {average_f1[i]:.3f}')
-    print(f'Accuracy = {average_acc[i]:.3f}')
-    print(f'Precision = {average_precision[i]:.3f}')
-    print(f'Recall = {average_recall[i]:.3f}')
-    print(f'ROC AUC = {average_roc_auc[i]:.3f}')
-    
 # Feature selection with variance threshold
 print("Running with variance threshold feature selection")
 threshold_value = 0.1
 selector = VarianceThreshold(threshold=threshold_value)
 x_selected = selector.fit_transform(x)
-
-acc_val = np.empty([num_folds, num_classifiers])
-f1_val = np.empty([num_folds, num_classifiers])
-precision = np.empty([num_folds, num_classifiers])
-recall = np.empty([num_folds, num_classifiers])
-roc_auc = np.empty([num_folds, num_classifiers])
-
-for i, (train_index, val_index) in enumerate(group_kfold.split(x_selected, y, patient_id)):
-    x_train, x_val = x_selected[train_index, :], x_selected[val_index, :]
-    y_train, y_val = y[train_index], y[val_index]
-
-    for j, clf in enumerate(classifiers): 
-        clf.fit(x_train, y_train)
-
-        predictions = clf.predict(x_val)
-        acc_val[i, j] = accuracy_score(y_val, predictions)
-        f1_val[i, j] = f1_score(y_val, predictions)
-        precision[i, j] = precision_score(y_val, predictions, zero_division=0)
-        recall[i, j] = recall_score(y_val, predictions)
-        roc_auc[i, j] = roc_auc_score(y_val, predictions)
-
-average_acc = np.mean(acc_val, axis=0) 
-average_f1 = np.mean(f1_val, axis=0)
-average_precision = np.mean(precision, axis=0)
-average_recall = np.mean(recall, axis=0)
-average_roc_auc = np.mean(roc_auc, axis=0)
-
-# Print out the results
-print("With variance threshold feature selection:")
-for i, classifier_name in enumerate(["KNN", "LR", "DTC"]):
-    print(f"############ Classifier {i+1} - {classifier_name}:")
-    print(f'F1 score = {average_f1[i]:.3f}')
-    print(f'Accuracy = {average_acc[i]:.3f}')
-    print(f'Precision = {average_precision[i]:.3f}')
-    print(f'Recall = {average_recall[i]:.3f}')
-    print(f'ROC AUC = {average_roc_auc[i]:.3f}')
+get_metrics(classifiers, x_selected, y, patient_id, "With variance threshold")
 
 # Feature selection with PCA
 print("Running with PCA feature selection")
 pca_transformer = PCA(n_components=3)
 x_pca = pca_transformer.fit_transform(x)
+get_metrics(classifiers, x_pca, y, patient_id, "With PCA")
 
-acc_val = np.empty([num_folds, num_classifiers])
-f1_val = np.empty([num_folds, num_classifiers])
-precision = np.empty([num_folds, num_classifiers])
-recall = np.empty([num_folds, num_classifiers])
-roc_auc = np.empty([num_folds, num_classifiers])
+# Define the path where to save the file
+pickle_path = './models/'
 
-for i, (train_index, val_index) in enumerate(group_kfold.split(x_pca, y, patient_id)):
-    x_train, x_val = x_pca[train_index, :], x_pca[val_index, :]
-    y_train, y_val = y[train_index], y[val_index]
-
-    for j, clf in enumerate(classifiers): 
-        clf.fit(x_train, y_train)
-
-        predictions = clf.predict(x_val)
-        acc_val[i, j] = accuracy_score(y_val, predictions)
-        f1_val[i, j] = f1_score(y_val, predictions)
-        precision[i, j] = precision_score(y_val, predictions, zero_division=0)
-        recall[i, j] = recall_score(y_val, predictions)
-        roc_auc[i, j] = roc_auc_score(y_val, predictions)
-
-average_acc = np.mean(acc_val, axis=0) 
-average_f1 = np.mean(f1_val, axis=0)
-average_precision = np.mean(precision, axis=0)
-average_recall = np.mean(recall, axis=0)
-average_roc_auc = np.mean(roc_auc, axis=0)
-
-# Print out the results
-print("With PCA feature selection:")
-for i, classifier_name in enumerate(["KNN", "LR", "DTC"]):
-    print(f"############ Classifier {i+1} - {classifier_name}:")
-    print(f'F1 score = {average_f1[i]:.3f}')
-    print(f'Accuracy = {average_acc[i]:.3f}')
-    print(f'Precision = {average_precision[i]:.3f}')
-    print(f'Recall = {average_recall[i]:.3f}')
-    print(f'ROC AUC = {average_roc_auc[i]:.3f}')
-
-# Let's say you now decided to use the 5-NN classifier
+# Chosen classifier
 classifier = KNN(n_neighbors=5)
-
-# It will be tested on external data, so we can try to maximize the use of our available data by training on ALL of x and y
 classifier = classifier.fit(x, y)
-
-# This is the classifier you need to save using pickle, add this to your zip file submission
 filename = 'groupXY_classifier.sav'
-pickle.dump(classifier, open(filename, 'wb'))
+
+# Check if the path exists, if not, create it
+if not os.path.exists(pickle_path):
+    os.makedirs(pickle_path)
+
+pickle.dump(classifier, open(os.path.join(pickle_path, filename), 'wb'))
+
 
 # Plot ROC curve for best classifier
 clf = classifier
