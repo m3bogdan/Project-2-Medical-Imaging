@@ -57,7 +57,7 @@ def classify(normal_image, segmentation_image):
 
 
 # Define the path where the images are located
-image_path = './Predictions/'
+image_path = r'Fixed\PROJECT\fyp2023\Predictions'
 
 # Your image paths
 normal_image_path = os.path.join(image_path, "OriginalImages", "PAT_26_37_865.png")
