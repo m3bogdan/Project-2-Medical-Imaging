@@ -35,8 +35,11 @@ def classify(normal_image, segmentation_image):
     X = list(extract_features(combined_image).values())
     X = np.array(X).reshape(1, -1)   
 
+    # Define the path where the classifier is located
+    pickle_path = './models/'
+
     # Load the trained classifier
-    classifier = pickle.load(open("C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/Project-2_github_repo/Fixed/PROJECT/fyp2023/group02_classifier.sav", 'rb'))
+    classifier = pickle.load(open(os.path.join(pickle_path, "groupXY_classifier.sav"), 'rb'))
 
     # Use it on this example to predict the label AND posterior probability
     pred_label = classifier.predict(X)
@@ -48,17 +51,18 @@ def classify(normal_image, segmentation_image):
     # Define label names
     label_names = ["Healthy", "Cancerous"]
 
-    # Extract image names from file paths
-    normal_image_name = os.path.basename(normal_image_path)
-    segmentation_image_name = os.path.basename(segmentation_image_path)
-
     # Print the results
-    print(f"The image: {normal_image_name} is predicted to be {label_names[pred_label[0]]}")
+    print(f"The image is predicted to be {label_names[pred_label[0]]}")
     print(f"The probability from 0-1 (0 being healthy and 1 cancerous) is: {predicted_class_prob}")
 
+
+# Define the path where the images are located
+image_path = './Predictions/'
+
 # Your image paths
-normal_image_path = "C:/Users/annam/Desktop/Images/Resized/PAT_26_37_865.png"
-segmentation_image_path = "C:/Users/annam/Desktop/Binary masks/Resized/PAT_26_37_865.png"
+normal_image_path = os.path.join(image_path, "OriginalImages", "PAT_26_37_865.png")
+segmentation_image_path = os.path.join(image_path, "SegmentedImages", "PAT_26_37_865.png")
+
 
 # Load the images
 normal_image = plt.imread(normal_image_path)
