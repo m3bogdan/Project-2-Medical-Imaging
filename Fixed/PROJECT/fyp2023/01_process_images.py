@@ -9,7 +9,7 @@ from extract_features import extract_features
 
 #Where is the raw provided data
 file_data = "./Project-2_github_repo/Fixed/PROJECT/fyp2023/data/metadata.csv"
-path_image = "C:/Users/annam/Desktop/Masked_images"
+path_image = "C:/Users/annam/Desktop/ITU/2nd_sem/02_First_Year_Project/2nd_project/All_images/Bad_masked_test_training_validation/Cross"
 
 #Where we will store the features
 file_features = "./Project-2_github_repo/Fixed/PROJECT/fyp2023/features/features.csv"

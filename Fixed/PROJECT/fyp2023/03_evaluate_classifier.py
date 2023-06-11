@@ -36,10 +36,10 @@ def classify(normal_image, segmentation_image):
     X = np.array(X).reshape(1, -1)   
 
     # Define the path where the classifier is located
-    pickle_path = './models/'
+    pickle_path = "Project-2_github_repo/Fixed/PROJECT/fyp2023/models"
 
     # Load the trained classifier
-    classifier = pickle.load(open(os.path.join(pickle_path, "groupXY_classifier.sav"), 'rb'))
+    classifier = pickle.load(open(os.path.join(pickle_path, "group02_classifier.sav"), 'rb'))
 
     # Use it on this example to predict the label AND posterior probability
     pred_label = classifier.predict(X)
@@ -57,7 +57,7 @@ def classify(normal_image, segmentation_image):
 
 
 # Define the path where the images are located
-image_path = r'Fixed\PROJECT\fyp2023\Predictions'
+image_path = "Project-2_github_repo/Fixed/PROJECT/fyp2023/Predictions"
 
 # Your image paths
 normal_image_path = os.path.join(image_path, "OriginalImages", "PAT_26_37_865.png")
