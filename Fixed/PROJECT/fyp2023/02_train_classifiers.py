@@ -78,7 +78,7 @@ get_metrics(classifiers, x_selected, y, patient_id, "With variance threshold")
 
 # Feature selection with PCA
 print("Running with PCA feature selection")
-pca_transformer = PCA(n_components=3)
+pca_transformer = PCA(n_components=5)
 x_pca = pca_transformer.fit_transform(x)
 get_metrics(classifiers, x_pca, y, patient_id, "With PCA")
 
