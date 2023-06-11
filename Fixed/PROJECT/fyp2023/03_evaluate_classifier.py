@@ -3,6 +3,7 @@ import numpy as np
 from extract_features import extract_features
 from PIL import Image
 import matplotlib.pyplot as plt
+import os
 
 def classify(normal_image, segmentation_image):
     # Make sure the images are the same size
@@ -44,8 +45,16 @@ def classify(normal_image, segmentation_image):
     # Get the probability for the predicted class
     predicted_class_prob = pred_prob[0, pred_label[0]]
 
-    print('predicted label is', pred_label)
-    print('predicted probability for the predicted class is', predicted_class_prob)
+    # Define label names
+    label_names = ["Healthy", "Cancerous"]
+
+    # Extract image names from file paths
+    normal_image_name = os.path.basename(normal_image_path)
+    segmentation_image_name = os.path.basename(segmentation_image_path)
+
+    # Print the results
+    print(f"The image: {normal_image_name} is predicted to be {label_names[pred_label[0]]}")
+    print(f"The probability from 0-1 (0 being healthy and 1 cancerous) is: {predicted_class_prob}")
 
 # Your image paths
 normal_image_path = r"C:\Users\serru\Downloads\img\Binary_mask\Test\PAT_26_37_865.png"
