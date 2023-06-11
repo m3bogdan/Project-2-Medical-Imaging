@@ -9,11 +9,11 @@ from skimage import io
 from extract_features import extract_features
 
 #Where is the raw provided data
-file_data = "./data/metadata.csv"
-path_image = r"C:\Users\serru\Downloads\img\Superposed"
+file_data = "./Project-2_github_repo/Fixed/PROJECT/fyp2023/data/metadata.csv"
+path_image = "C:/Users/annam/Desktop/Masked_images"
 
 #Where we will store the features
-file_features = "./features/features.csv"
+file_features = "./Project-2_github_repo/Fixed/PROJECT/fyp2023/features/features.csv"
 
 #Read meta-data into a Pandas dataframe
 df = pd.read_csv(file_data)
