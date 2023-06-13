@@ -28,7 +28,6 @@ def open_picke(picked_path):
     return model
 
 
-
 def create_df(image_folder,csv_path):
     df = pd.read_csv(csv_path)
     features = extract_features_folder(image_folder)
