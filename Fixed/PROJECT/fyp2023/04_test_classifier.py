@@ -27,13 +27,11 @@ def open_picke(picked_path):
         model = pickle.load(file)
     return model
 
-
 def create_df(image_folder,csv_path):
     df = pd.read_csv(csv_path)
     features = extract_features_folder(image_folder)
     df_merged = pd.merge(df, features, on='img_id', how='inner')
     return df_merged
-
 
 def test(pickled_path,image_folder,csv_path):
     picked_file = open_picke(pickled_path)    
@@ -52,4 +50,5 @@ pickled_path = r"Fixed\PROJECT\fyp2023\models\group02_classifier.sav"
 image_folder = r"C:\Users\45911\Desktop\DS\Semester2\First_year_project\Project2\Pictures\data\TestMixed"
 csv_path = r"Fixed\PROJECT\fyp2023\csv_datatypes\Mixed.csv"
 test(pickled_path,image_folder,csv_path)
+
 

@@ -83,7 +83,7 @@ x_pca = pca_transformer.fit_transform(x)
 get_metrics(classifiers, x_pca, y, patient_id, "With PCA")
 
 # Define the path where to save the file
-pickle_path = 'Project-2_github_repo/Fixed/PROJECT/fyp2023/models'
+pickle_path = 'Project-2_github_repo/Fixed/PROJECT/fyp2023/model_group02'
 
 # Chosen classifier
 classifier = KNN(n_neighbors=5)
