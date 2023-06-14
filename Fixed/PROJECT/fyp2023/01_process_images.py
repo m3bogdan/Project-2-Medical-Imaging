@@ -37,3 +37,6 @@ def extract_features_folder(path_image):
 df_merged = pd.merge(df[['img_id', 'diagnostic', 'patient_id']], extract_features_folder(path_image), on='img_id', how='inner')   
 df_merged.to_csv(file_features, index=False)
 print("01_Process_Images: Done")
+
+
+#
